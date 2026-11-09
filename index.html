@@ -3,22 +3,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OKB | Seafloor Explorer</title>
 
-  <link
-    href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css"
-    rel="stylesheet"
-  >
+  <link href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css" rel="stylesheet">
 
   <style>
+    :root {
+      --navy: #091d2e;
+      --panel: #102b40;
+      --border: #29485e;
+      --accent: #46c4cf;
+      --muted: #9cb5c4;
+    }
+
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #081c2c;
-      color: white;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: #fff;
+      background: var(--navy);
     }
 
     #map {
@@ -26,46 +31,145 @@
       inset: 0;
     }
 
-    .header {
+    .topbar {
       position: absolute;
-      top: 16px;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 66px;
+      z-index: 3;
+      background: rgba(9, 29, 46, 0.96);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+    }
+
+    .brand h1 {
+      font-size: 17px;
+      letter-spacing: 1px;
+      margin: 0;
+    }
+
+    .brand p {
+      font-size: 11px;
+      color: var(--muted);
+      margin: 4px 0 0;
+    }
+
+    .sidebar {
+      position: absolute;
+      top: 82px;
       left: 16px;
       z-index: 2;
-      padding: 16px 22px;
-      background: rgba(8, 28, 44, 0.92);
-      border-radius: 8px;
+      width: 290px;
+      max-width: calc(100vw - 32px);
+      padding: 20px;
+      background: rgba(9, 29, 46, 0.94);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.22);
     }
 
-    .header h1 {
-      margin: 0 0 5px;
-      font-size: 20px;
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 16px;
     }
 
-    .header p {
-      margin: 0;
+    .layer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 13px 0;
+      font-size: 13px;
+    }
+
+    .layer-row label {
+      cursor: pointer;
+    }
+
+    input[type="checkbox"] {
+      accent-color: var(--accent);
+      width: 17px;
+      height: 17px;
+      cursor: pointer;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
       font-size: 12px;
-      color: #a9c2d2;
+      color: var(--muted);
+      margin-top: 16px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
+    }
+
+    .info {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
     }
 
     .coordinates {
       position: absolute;
-      bottom: 25px;
       left: 16px;
+      bottom: 35px;
       z-index: 2;
+      background: rgba(9, 29, 46, 0.94);
+      border: 1px solid var(--border);
       padding: 10px 14px;
-      background: rgba(8, 28, 44, 0.92);
       border-radius: 6px;
-      font-size: 13px;
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
     }
 
-    .attribution {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      z-index: 2;
-      padding: 4px 8px;
-      background: rgba(8, 28, 44, 0.8);
-      font-size: 11px;
+    .maplibregl-ctrl-top-right {
+      top: 76px;
+    }
+
+    .maplibregl-ctrl-bottom-right {
+      bottom: 24px;
+    }
+
+    @media (max-width: 600px) {
+      .topbar { padding: 0 12px; }
+      .sidebar {
+        top: 76px;
+        left: 10px;
+        width: 250px;
+        padding: 14px;
+      }
+      .coordinates {
+        left: 10px;
+        bottom: 32px;
+        font-size: 10px;
+      }
     }
   </style>
 </head>
@@ -73,37 +177,86 @@
 <body>
   <div id="map"></div>
 
-  <div class="header">
-    <h1>OKB Seafloor Explorer</h1>
-    <p>Southern Ocean Bathymetric Mapping</p>
-  </div>
+  <header class="topbar">
+    <div class="brand-icon">≋</div>
+    <div class="brand">
+      <h1>OKB SEAFLOOR EXPLORER</h1>
+      <p>Southern Ocean | Bathymetric Mapping Platform</p>
+    </div>
+  </header>
+
+  <aside class="sidebar">
+    <div class="section-title">Map Layers</div>
+
+    <div class="layer-row">
+      <label for="bathymetry-toggle">GEBCO Bathymetry</label>
+      <input type="checkbox" id="bathymetry-toggle" checked>
+    </div>
+
+    <div class="layer-row">
+      <label for="contour-toggle">500 m Contours</label>
+      <input type="checkbox" id="contour-toggle" checked>
+    </div>
+
+    <div class="layer-row">
+      <label for="label-toggle">Contour Labels</label>
+      <input type="checkbox" id="label-toggle" checked>
+    </div>
+
+    <div class="slider-label">
+      <span>Contour opacity</span>
+      <span id="opacity-value">75%</span>
+    </div>
+    <input type="range" id="contour-opacity"
+           min="0" max="100" value="75">
+
+    <div class="divider"></div>
+
+    <div class="section-title">Dataset Information</div>
+    <div class="info">
+      <strong>Bathymetry:</strong> GEBCO<br>
+      <strong>Contours:</strong> 500 m interval<br>
+      <strong>Projection:</strong> Web Mercator<br>
+      <strong>Coverage:</strong> Partial Southern Ocean
+    </div>
+  </aside>
 
   <div class="coordinates" id="coordinates">
-    Move cursor over map
-  </div>
-
-  <div class="attribution">
-    Bathymetry: GEBCO Compilation Group (2026)
+    LAT -- | LON --
   </div>
 
   <script src="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.js"></script>
   <script src="https://unpkg.com/pmtiles@4/dist/pmtiles.js"></script>
 
   <script>
+    // Register PMTiles
     const protocol = new pmtiles.Protocol();
     maplibregl.addProtocol("pmtiles", protocol.tile);
+
     const map = new maplibregl.Map({
       container: "map",
+      center: [160, -55],
+      zoom: 3,
+      maxZoom: 14,
+      attributionControl: true,
+
       style: {
         version: 8,
+
+        // Required for text labels
+        glyphs:
+          "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
+
         sources: {
           gebco: {
             type: "raster",
             tiles: [
               "https://wms.gebco.net/mapserv?" +
-              "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap" +
-              "&LAYERS=GEBCO_LATEST&STYLES=" +
-              "&FORMAT=image/png&TRANSPARENT=false" +
+              "SERVICE=WMS&VERSION=1.1.1" +
+              "&REQUEST=GetMap" +
+              "&LAYERS=GEBCO_LATEST" +
+              "&STYLES=&FORMAT=image/png" +
+              "&TRANSPARENT=false" +
               "&SRS=EPSG:3857" +
               "&BBOX={bbox-epsg-3857}" +
               "&WIDTH=256&HEIGHT=256"
@@ -112,6 +265,7 @@
             attribution: "GEBCO Compilation Group"
           }
         },
+
         layers: [
           {
             id: "gebco-bathymetry",
@@ -119,10 +273,7 @@
             source: "gebco"
           }
         ]
-      },
-      center: [160, -55],
-      zoom: 3,
-      maxZoom: 14
+      }
     });
 
     map.addControl(
@@ -138,37 +289,118 @@
       "bottom-right"
     );
 
-    map.on("mousemove", (event) => {
-      const lng = event.lngLat.lng;
-      const lat = event.lngLat.lat;
+    // Add contour layers
+    map.on("load", () => {
+      map.addSource("contours", {
+        type: "vector",
+        url:
+          "pmtiles://https://moyboy22.github.io/" +
+          "OKB_Seafloor_Webmap/Contour_500.pmtiles"
+      });
 
-      document.getElementById("coordinates").textContent =
-        `Latitude: ${lat.toFixed(5)}° | Longitude: ${lng.toFixed(5)}°`;
+      map.addLayer({
+        id: "contour-lines",
+        type: "line",
+        source: "contours",
+        "source-layer": "contours_500",
+        minzoom: 5,
+        maxzoom: 14,
+        paint: {
+          "line-color": "#e3f2f8",
+          "line-width": [
+            "interpolate", ["linear"], ["zoom"],
+            5, 0.5,
+            8, 0.9,
+            11, 1.3
+          ],
+          "line-opacity": 0.75
+        }
+      });
+
+      map.addLayer({
+        id: "contour-labels",
+        type: "symbol",
+        source: "contours",
+        "source-layer": "contours_500",
+        minzoom: 6,
+        maxzoom: 14,
+        layout: {
+          "symbol-placement": "line",
+          "text-field": [
+            "concat",
+            ["to-string", ["get", "ELEV"]],
+            " m"
+          ],
+          "text-font": ["Open Sans Regular"],
+          "text-size": 11,
+          "symbol-spacing": 350,
+          "text-rotation-alignment": "map",
+          "text-keep-upright": true,
+          "text-allow-overlap": false
+        },
+        paint: {
+          "text-color": "#ffffff",
+          "text-halo-color": "#102b40",
+          "text-halo-width": 1.5
+        }
+      });
+    });
+
+    // Layer controls
+    function toggleLayer(checkboxId, layerId) {
+      document.getElementById(checkboxId)
+        .addEventListener("change", (event) => {
+          if (!map.getLayer(layerId)) return;
+
+          map.setLayoutProperty(
+            layerId,
+            "visibility",
+            event.target.checked ? "visible" : "none"
+          );
+        });
+    }
+
+    toggleLayer("bathymetry-toggle", "gebco-bathymetry");
+    toggleLayer("contour-toggle", "contour-lines");
+    toggleLayer("label-toggle", "contour-labels");
+
+    // Contour opacity slider
+    document.getElementById("contour-opacity")
+      .addEventListener("input", (event) => {
+        const opacity = Number(event.target.value) / 100;
+
+        document.getElementById("opacity-value")
+          .textContent = event.target.value + "%";
+
+        if (map.getLayer("contour-lines")) {
+          map.setPaintProperty(
+            "contour-lines",
+            "line-opacity",
+            opacity
+          );
+        }
+      });
+
+    // Cursor coordinates
+    map.on("mousemove", (event) => {
+      const lat = event.lngLat.lat;
+      const lon = event.lngLat.lng;
+
+      const latText =
+        Math.abs(lat).toFixed(5) + "°" +
+        (lat < 0 ? "S" : "N");
+
+      const lonText =
+        Math.abs(lon).toFixed(5) + "°" +
+        (lon < 0 ? "W" : "E");
+
+      document.getElementById("coordinates")
+        .textContent = `LAT ${latText} | LON ${lonText}`;
     });
 
     map.on("error", (event) => {
-      console.error("Map error:", event.error);
+      console.error("MapLibre error:", event.error);
     });
-    map.on("load", () => {
-  map.addSource("contours", {
-    type: "vector",
-    url: "pmtiles://https://moyboy22.github.io/OKB_Seafloor_Webmap/Contour_500.pmtiles"
-  });
-
-  map.addLayer({
-    id: "contour-lines",
-    type: "line",
-    source: "contours",
-    "source-layer": "contours_500",
-    minzoom: 5,
-    maxzoom: 11,
-    paint: {
-      "line-color": "#ffffff",
-      "line-width": 0.9,
-      "line-opacity": 0.75
-    }
-  });
-});
   </script>
 </body>
 </html>
