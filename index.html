@@ -87,8 +87,11 @@
   </div>
 
   <script src="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.js"></script>
+  <script src="https://unpkg.com/pmtiles@4/dist/pmtiles.js"></script>
 
   <script>
+    const protocol = new pmtiles.Protocol();
+    maplibregl.addProtocol("pmtiles", protocol.tile);
     const map = new maplibregl.Map({
       container: "map",
       style: {
@@ -146,6 +149,26 @@
     map.on("error", (event) => {
       console.error("Map error:", event.error);
     });
+    map.on("load", () => {
+  map.addSource("contours", {
+    type: "vector",
+    url: "pmtiles://https://moyboy22.github.io/OKB_Seafloor_Webmap/Contour_500.pmtiles"
+  });
+
+  map.addLayer({
+    id: "contour-lines",
+    type: "line",
+    source: "contours",
+    "source-layer": "contours_500",
+    minzoom: 5,
+    maxzoom: 11,
+    paint: {
+      "line-color": "#ffffff",
+      "line-width": 0.9,
+      "line-opacity": 0.75
+    }
+  });
+});
   </script>
 </body>
 </html>
