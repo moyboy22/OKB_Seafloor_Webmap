@@ -463,8 +463,7 @@
       <div class="basemap-popover-heading">Basemap Style</div>
       <label for="basemap-style" class="info">Bathymetric appearance</label>
       <select class="basemap-select" id="basemap-style" aria-describedby="basemap-status">
-        <option value="ocean" selected>Ocean Relief · Navy / Cyan</option>
-        <option value="chart">Fishing Chart · Global Depth Colours</option>
+        <option value="chart" selected>Fishing Chart · Global Depth Colours</option>
         <option value="original">Original GEBCO · Classic</option>
       </select>
       <div class="layer-row basemap-hillshade">
@@ -472,11 +471,11 @@
         <input type="checkbox" id="basemap-shade" checked>
       </div>
       <div class="basemap-note" id="basemap-status" role="status" aria-live="polite">
-        Ocean Relief loads by default; original GEBCO remains available.
+        Fishing Chart is the global default; Original GEBCO is available.
       </div>
       <div class="basemap-note basemap-footnote">
-        Both custom basemaps use worldwide GEBCO 2026 imagery.
-        Only the depth highlighter and contours have regional coverage.
+        Fishing Chart uses worldwide GEBCO 2026 imagery with optional
+        relief shading. Numerical highlighting and contours remain regional.
         Original GEBCO displays at close zoom.
       </div>
     </div>
@@ -945,6 +944,6 @@
   </script>
   <script src="./tools.js"></script>
   <script src="./depth.js?v=1000-2000-20261110"></script>
-  <script src="./basemap.js?v=global-20261110"></script>
+  <script src="./basemap.js?v=chart-default-20261110"></script>
 </body>
 </html>

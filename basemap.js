@@ -3,8 +3,10 @@
  * IMPORTANT:
  * The small regional DEM PMTiles are only for numeric depth highlighting.
  * Basemaps use separate GLOBAL GEBCO WMS layers, so no DEM rectangle/seams.
- * Ocean Relief = GEBCO 2026 shaded bathymetry, colour-adjusted in MapLibre.
- * Fishing Chart = GEBCO 2026 flat elevation colour map, with optional relief.
+ * Fishing Chart (default) = GEBCO 2026 flat elevation colour map,
+ * optionally enhanced with a global shaded-relief overlay.
+ * A regional-only numerical Ocean Relief is intentionally NOT exposed as a
+ * basemap: doing so creates visible seams around its partial DEM coverage.
  * Original GEBCO remains available and returns at zoom 10+.
  */
 (() => {
@@ -17,7 +19,6 @@
   const button = document.getElementById("basemap-button");
   const popover = document.getElementById("basemap-popover");
   const originalId = "gebco-bathymetry";
-  const oceanId = "okb-global-ocean";
   const chartId = "okb-global-chart";
   const chartShadeId = "okb-global-chart-shade";
   const oceanSource = "okb-gebco-2026-shaded";
@@ -78,20 +79,6 @@
       ? "okb-depth-highlight"
       : map.getLayer("contour-lines") ? "contour-lines" : undefined;
 
-    if (!map.getLayer(oceanId)) {
-      map.addLayer({
-        id: oceanId, type: "raster", source: oceanSource, maxzoom: highZoomThreshold,
-        layout: { visibility: "none" },
-        paint: {
-          "raster-opacity": 1,
-          "raster-contrast": 0.16,
-          "raster-saturation": -0.24,
-          "raster-brightness-min": 0,
-          "raster-brightness-max": 0.78
-        }
-      }, before);
-    }
-
     if (!map.getLayer(chartId)) {
       map.addLayer({
         id: chartId, type: "raster", source: chartSource, maxzoom: highZoomThreshold,
@@ -130,8 +117,7 @@
 
   function applyColours(mode) {
     if (!map.getLayer("contour-lines")) return;
-    const colour = mode === "chart" ? "#ecf8ff" :
-      mode === "ocean" ? "#cae5ec" : "#b8edf7";
+    const colour = mode === "chart" ? "#ecf8ff" : "#b8edf7";
     map.setPaintProperty("contour-lines", "line-color", colour);
   }
 
@@ -139,8 +125,8 @@
     try {
       const mode = select.value;
       const close = map.getZoom() >= highZoomThreshold;
-      if (!["original", "ocean", "chart"].includes(mode)) {
-        select.value = "original";
+      if (!["original", "chart"].includes(mode)) {
+        select.value = "chart";
         applyMode();
         return;
       }
@@ -152,26 +138,16 @@
 
       // Only one global WMS basemap is active at a time; no regional seam.
       visible(originalId, mode === "original" || close);
-      visible(oceanId, mode === "ocean" && !close);
       visible(chartId, mode === "chart" && !close);
       visible(chartShadeId, mode === "chart" && !close && reliefToggle.checked);
 
-      // The global Ocean WMS already has relief baked in. The checkbox
-      // adjusts its definition, not an unavailable numerical hillshade.
-      if (map.getLayer(oceanId)) {
-        map.setPaintProperty(oceanId, "raster-contrast",
-          reliefToggle.checked ? 0.16 : 0.05);
-      }
       applyColours(mode);
 
       reliefToggle.disabled = mode === "original";
       if (mode === "original") {
         message("Original GEBCO shaded imagery across the globe.");
       } else if (close) {
-        message("Zoom 10+: original GEBCO detail is displayed. Zoom out to view " +
-          (mode === "ocean" ? "Ocean Relief." : "Fishing Chart."));
-      } else if (mode === "ocean") {
-        message("Worldwide GEBCO 2026 shaded relief. No regional basemap edges.");
+        message("Zoom 10+: original GEBCO detail is displayed. Zoom out to view Fishing Chart.");
       } else {
         message("Worldwide GEBCO 2026 depth-coloured chart imagery.");
       }
@@ -182,7 +158,6 @@
       // The original GEBCO layer is pre-existing and known to work.
       try {
         visible(originalId, true);
-        visible(oceanId, false);
         visible(chartId, false);
         visible(chartShadeId, false);
       } catch (restoreError) {
@@ -198,8 +173,7 @@
   map.on("error", event => {
     // Auto-revert only after repeated failures from the active WMS source.
     const src = event.sourceId || event.source?.id;
-    const active = select.value === "ocean" ? oceanSource :
-      select.value === "chart" ? chartSource : null;
+    const active = select.value === "chart" ? chartSource : null;
     if (!active || src !== active) return;
     tileErrors += 1;
     if (tileErrors < 3) return;
