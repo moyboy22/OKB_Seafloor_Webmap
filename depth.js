@@ -1,6 +1,8 @@
 /* GEBCO 2026 dynamic depth highlighter.
  * Source: elevation GeoTIFF reprojected into PMTiles raster-dem tiles.
  * Encoding: RGB(0, high byte, low byte); elevation = 256*G + B - 32768.
+ * MapLibre 5.6.2 uses DEMData.unpack = dot(RGB, factors) - baseShift.
+ * redFactor MUST be nonzero because color-relief packDEMData divides by minFactor.
  * NoData: +32767 m (always transparent in the highlighter ramp).
  * No raster computation happens when changing depth limits.
  */
@@ -121,10 +123,13 @@
           type: "raster-dem",
           url: "pmtiles://" + selected.url,
           encoding: "custom",
-          redFactor: 0,
+          // RGB PNG is a signed Int16 elevation with a +32768 offset.
+          // Positive redFactor is essential for MapLibre color-relief's
+          // elevation stop packing, even though encoded R is always zero.
+          redFactor: 65536,
           greenFactor: 256,
           blueFactor: 1,
-          baseShift: -32768,
+          baseShift: 32768,
           tileSize: 256,
           // PMTiles TileJSON controls minzoom/maxzoom (7 or 8).
           attribution: "GEBCO Compilation Group (2026). Not for navigation."
@@ -146,9 +151,8 @@
       enabled.disabled = false;
       enabled.checked = true;
       updateDepthStyle();
-      const sourceLabel = selected.candidate.includes("_Z8") ? "zoom 8" : "zoom 7";
-      setMessage("GEBCO 2026 " + sourceLabel +
-        " depth tiles ready. Adjust the range or turn highlighting off.", "success");
+      console.info("OKB depth highlighter activated with", selected.candidate,
+        "· RGB decode: R*65536 + G*256 + B - 32768");
     } catch (e) {
       sourceReady = false;
       enabled.disabled = true;
