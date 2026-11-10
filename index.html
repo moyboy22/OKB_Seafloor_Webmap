@@ -203,6 +203,14 @@
       <input type="checkbox" id="label-toggle" checked>
     </div>
 
+    <div class="layer-row">
+      <label for="sprfmo-toggle">SPRFMO Research Areas</label>
+      <input type="checkbox" id="sprfmo-toggle" checked>
+    </div>
+    <div class="info" style="font-size:11px; margin-top:-4px;">
+      Gold: exact polygons · Dashed: schematic/partial boundary
+    </div>
+
     <div class="slider-label">
       <span>Contour opacity</span>
       <span id="opacity-value">75%</span>
@@ -217,7 +225,9 @@
       <strong>Bathymetry:</strong> GEBCO<br>
       <strong>Contours:</strong> 500 m interval<br>
       <strong>Projection:</strong> Web Mercator<br>
-      <strong>Coverage:</strong> Partial Southern Ocean
+      <strong>Coverage:</strong> Partial Southern Ocean<br>
+      <strong>Research areas:</strong> SPRFMO (20 Aug 2026)<br>
+      <span style="font-size:11px;">Research boundaries are a plotting aid, not legal fishing limits.</span>
     </div>
   </aside>
 
@@ -342,6 +352,144 @@
           "text-color": "#ffffff",
           "text-halo-color": "#102b40",
           "text-halo-width": 1.5
+        }
+      });
+      // Small GeoJSON overlay; no tile conversion or additional hosting required.
+      map.addSource("sprfmo-research", {
+        type: "geojson",
+        data: "./SPRFMO_research_areas.geojson",
+        attribution: "SPRFMO research area measures (20 Aug 2026); schematic boundaries are not legally authoritative"
+      });
+
+      map.addLayer({
+        id: "sprfmo-fill",
+        type: "fill",
+        source: "sprfmo-research",
+        filter: ["all", ["==", ["get", "feature_role"], "geometry"],
+          ["==", ["get", "representation"], "exact_rectangle"]],
+        paint: { "fill-color": "#f3bf58", "fill-opacity": 0.13 }
+      });
+
+      map.addLayer({
+        id: "sprfmo-outline",
+        type: "line",
+        source: "sprfmo-research",
+        filter: ["all", ["==", ["get", "feature_role"], "geometry"],
+          ["==", ["get", "representation"], "exact_rectangle"]],
+        paint: { "line-color": "#ffd37c", "line-width": 2 }
+      });
+
+      map.addLayer({
+        id: "sprfmo-schematic",
+        type: "line",
+        source: "sprfmo-research",
+        filter: ["all", ["==", ["get", "feature_role"], "geometry"],
+          ["!=", ["get", "representation"], "exact_rectangle"]],
+        paint: {
+          "line-color": ["match", ["get", "representation"],
+            "schematic_outline", "#ffca70", "#70d7df"],
+          "line-width": 2.5,
+          "line-dasharray": [3, 2]
+        }
+      });
+
+      // Wider invisible hit target makes thin boundaries easier to select.
+      map.addLayer({
+        id: "sprfmo-line-hit",
+        type: "line",
+        source: "sprfmo-research",
+        filter: ["all", ["==", ["get", "feature_role"], "geometry"],
+          ["!=", ["get", "representation"], "exact_rectangle"]],
+        paint: { "line-color": "#ffffff", "line-opacity": 0, "line-width": 14 }
+      });
+
+      map.addLayer({
+        id: "sprfmo-labels",
+        type: "symbol",
+        source: "sprfmo-research",
+        filter: ["==", ["get", "feature_role"], "label"],
+        layout: {
+          "text-field": ["get", "research_area"],
+          "text-font": ["Noto Sans Regular"],
+          "text-size": 12,
+          "text-allow-overlap": false,
+          "text-offset": [0, -0.5]
+        },
+        paint: {
+          "text-color": "#ffe2a7",
+          "text-halo-color": "#091d2e",
+          "text-halo-width": 2
+        }
+      });
+
+      const researchLayerIds = [
+        "sprfmo-fill", "sprfmo-outline", "sprfmo-schematic",
+        "sprfmo-line-hit", "sprfmo-labels"
+      ];
+
+      const selectedFields = [
+        ["Member", "member"],
+        ["Research area", "research_area"],
+        ["Measure", "cmm"],
+        ["Approval period", "approval_period"],
+        ["Authorised vessels", "vessels"],
+        ["Annual TAC", "annual_tac"],
+        ["Area / stratum limit", "area_limit"],
+        ["North limit", "north_limit"],
+        ["South limit", "south_limit"],
+        ["West limit", "west_limit"],
+        ["East limit", "east_limit"],
+        ["Boundary accuracy", "boundary_accuracy"],
+        ["Notes", "notes"]
+      ];
+
+      function showResearchPopup(event) {
+        const f = event.features && event.features[0];
+        if (!f) return;
+        const p = f.properties || {};
+        const popup = document.createElement("div");
+        popup.style.cssText = "color:#173044;font:13px/1.5 Segoe UI,Arial,sans-serif;max-width:310px;max-height:320px;overflow:auto;";
+        const heading = document.createElement("strong");
+        heading.textContent = p.research_area || "Research area";
+        heading.style.cssText = "display:block;font-size:16px;margin-bottom:8px;";
+        popup.appendChild(heading);
+
+        for (const [label, field] of selectedFields) {
+          if (!p[field] || field === "research_area") continue;
+          const row = document.createElement("div");
+          row.style.marginBottom = "4px";
+          const key = document.createElement("strong");
+          key.textContent = label + ": ";
+          row.appendChild(key);
+          row.appendChild(document.createTextNode(String(p[field])));
+          popup.appendChild(row);
+        }
+        if (p.source_url && /^https:\/\//i.test(p.source_url)) {
+          const a = document.createElement("a");
+          a.href = p.source_url;
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+          a.textContent = "View source measure";
+          a.style.cssText = "display:block;margin-top:10px;color:#006f8e;";
+          popup.appendChild(a);
+        }
+        const caveat = document.createElement("small");
+        caveat.style.cssText = "display:block;margin-top:8px;color:#526675;";
+        caveat.textContent = "Mapping aid only. Confirm current SPRFMO measures and authoritative EEZ geometry before operational use.";
+        popup.appendChild(caveat);
+        new maplibregl.Popup({ closeButton: true, maxWidth: "360px" })
+          .setLngLat(event.lngLat).setDOMContent(popup).addTo(map);
+      }
+
+      for (const layerId of ["sprfmo-fill", "sprfmo-line-hit", "sprfmo-labels"]) {
+        map.on("click", layerId, showResearchPopup);
+        map.on("mouseenter", layerId, () => { map.getCanvas().style.cursor = "pointer"; });
+        map.on("mouseleave", layerId, () => { map.getCanvas().style.cursor = ""; });
+      }
+
+      document.getElementById("sprfmo-toggle").addEventListener("change", (event) => {
+        for (const id of researchLayerIds) {
+          map.setLayoutProperty(id, "visibility", event.target.checked ? "visible" : "none");
         }
       });
     });
