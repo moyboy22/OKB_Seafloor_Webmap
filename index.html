@@ -294,7 +294,133 @@
     #measure-status { min-height:34px; }
     .coordinates { cursor:copy; }
 
+
+    /* Compact basemap control, independent of the left tools sidebar. */
+    .basemap-widget {
+      position: absolute;
+      z-index: 4;
+      right: 14px;
+      top: 207px;
+      width: 44px;
+    }
+    .basemap-button {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      background: rgba(9, 29, 46, 0.92);
+      color: #d3eef4;
+      border: 1px solid rgba(111, 179, 194, .45);
+      border-radius: 11px;
+      box-shadow: 0 6px 18px rgba(3, 15, 26, .25);
+      cursor: pointer;
+      backdrop-filter: blur(9px);
+    }
+    .basemap-button:hover, .basemap-button:focus-visible,
+    .basemap-button[aria-expanded="true"] {
+      color: #fff;
+      border-color: var(--accent);
+      background: #173b50;
+    }
+    .basemap-popover {
+      position: absolute;
+      top: 52px;
+      right: 0;
+      width: 268px;
+      padding: 16px;
+      border: 1px solid #31576a;
+      border-radius: 12px;
+      background: rgba(8, 29, 44, .97);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, .33);
+      backdrop-filter: blur(16px);
+    }
+    .basemap-popover[hidden] { display: none; }
+    .basemap-popover-heading {
+      color: #5ad2de;
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: 1.3px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .basemap-footnote {
+      margin-top: 11px;
+      padding-top: 10px;
+      border-top: 1px solid #29485e;
+      opacity: .85;
+    }
+
+    /* Expand/collapse panels with a clear accessible touch target. */
+    .sidebar { padding: 8px; width: 305px; }
+    .panel-group {
+      background: rgba(15, 44, 62, .58);
+      border: 1px solid rgba(77, 120, 142, .30);
+      border-radius: 9px;
+      overflow: hidden;
+      margin-bottom: 7px;
+    }
+    .panel-group > summary {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      padding: 13px 12px;
+      color: #54c5d0;
+      text-transform: uppercase;
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: 1.15px;
+      user-select: none;
+    }
+    .panel-group > summary::-webkit-details-marker,
+    .contour-options > summary::-webkit-details-marker { display: none; }
+    .panel-group > summary::after,
+    .contour-options > summary::after {
+      content: "";
+      width: 7px; height: 7px;
+      border-right: 1.6px solid #9dbec9;
+      border-bottom: 1.6px solid #9dbec9;
+      transform: rotate(45deg);
+      transition: transform 160ms ease;
+      flex: none;
+      margin-left: 10px;
+    }
+    .panel-group[open] > summary::after,
+    .contour-options[open] > summary::after { transform: rotate(225deg); }
+    .panel-group > summary:hover, .panel-group > summary:focus-visible {
+      background: rgba(73, 170, 191, .10); color: #89e7ee;
+    }
+    .panel-body { padding: 0 12px 13px; }
+    .contour-options {
+      border-left: 1px solid #3a5e73;
+      margin: -3px 0 13px 4px;
+      padding-left: 10px;
+    }
+    .contour-options > summary {
+      list-style: none; display: flex; align-items: center;
+      justify-content: space-between;
+      cursor: pointer; gap: 10px; padding: 5px 0;
+      color: #b8d1da; font-size: 11px;
+    }
+    .contour-options > summary span {
+      color: #7795a3;
+      margin-left: auto;
+      font-size: 10px;
+    }
+    .contour-options-body { padding: 1px 0 8px; }
+    .contour-options-body .slider-label { margin-top: 6px; }
+    .contour-options-body .layer-row { margin: 8px 0; }
+    .aoi-legend { margin-top: 10px; }
+    .aoi-legend-key {
+      display: inline-block; width: 14px; height: 10px;
+      border: 1.5px dashed #5ed7e3; vertical-align: middle;
+      margin-right: 6px; border-radius: 2px;
+    }
+
     @media (max-width: 600px) {
+      .basemap-widget { right: 10px; top: 194px; }
+      .basemap-popover { width: min(268px, calc(100vw - 26px)); }
       .okb-wordmark { width: 149px; height: auto; }
       .brand h1 { font-size: 12px; letter-spacing: 0.4px; }
       .brand p { display: none; }
@@ -326,57 +452,77 @@
     </div>
   </header>
 
-  <aside class="sidebar">
-    <div class="section-title">Basemap Style</div>
-    <label for="basemap-style" class="info">Bathymetric appearance</label>
-    <select class="basemap-select" id="basemap-style" aria-describedby="basemap-status">
-      <option value="original" selected>Original GEBCO · Default</option>
-      <option value="ocean">Ocean Relief · Navy / Cyan</option>
-      <option value="chart">Fishing Chart · Depth Bands</option>
-    </select>
-    <div class="layer-row basemap-hillshade">
-      <label for="basemap-shade">Relief shading (custom styles)</label>
-      <input type="checkbox" id="basemap-shade" checked>
+  <div class="basemap-widget" id="basemap-widget">
+    <button type="button" id="basemap-button" class="basemap-button"
+      aria-label="Change basemap" aria-expanded="false" aria-controls="basemap-popover"
+      title="Change basemap">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
+           aria-hidden="true">
+        <path d="m12 2 9 5-9 5-9-5 9-5Z"></path>
+        <path d="m3 12 9 5 9-5"></path>
+        <path d="m3 17 9 5 9-5"></path>
+      </svg>
+    </button>
+    <div id="basemap-popover" class="basemap-popover" role="region"
+         aria-label="Basemap settings" hidden>
+      <div class="basemap-popover-heading">Basemap Style</div>
+      <label for="basemap-style" class="info">Bathymetric appearance</label>
+      <select class="basemap-select" id="basemap-style" aria-describedby="basemap-status">
+        <option value="ocean" selected>Ocean Relief · Navy / Cyan</option>
+        <option value="chart">Fishing Chart · Depth Bands</option>
+        <option value="original">Original GEBCO · Classic</option>
+      </select>
+      <div class="layer-row basemap-hillshade">
+        <label for="basemap-shade">Relief shading</label>
+        <input type="checkbox" id="basemap-shade" checked>
+      </div>
+      <div class="basemap-note" id="basemap-status" role="status" aria-live="polite">
+        Ocean Relief loads by default; original GEBCO remains available.
+      </div>
+      <div class="basemap-note basemap-footnote">
+        Global GEBCO backdrop · Numerical relief only where depth tiles exist.
+        Original GEBCO displays at close zoom.
+      </div>
     </div>
-    <div class="basemap-note" id="basemap-status" role="status" aria-live="polite">
-      Original GEBCO WMS is the safe default.
-    </div>
-    <div class="divider"></div>
-    <div class="section-title">Map Layers</div>
+  </div>
 
-    <div class="layer-row">
-      <label for="bathymetry-toggle">GEBCO Bathymetry</label>
-      <input type="checkbox" id="bathymetry-toggle" checked>
-    </div>
-
-    <div class="layer-row">
-      <label for="contour-toggle">500 m Contours</label>
-      <input type="checkbox" id="contour-toggle" checked>
-    </div>
-
-    <div class="layer-row">
-      <label for="label-toggle">Contour Labels</label>
-      <input type="checkbox" id="label-toggle" checked>
-    </div>
-
-    <div class="layer-row">
-      <label for="sprfmo-toggle">SPRFMO Research Areas</label>
-      <input type="checkbox" id="sprfmo-toggle" checked>
-    </div>
-    <div class="info" style="font-size:11px; margin-top:-4px;">
-      Gold: exact polygons · Dashed: schematic/partial boundary
-    </div>
-
-    <div class="slider-label">
-      <span>Contour opacity</span>
-      <span id="opacity-value">75%</span>
-    </div>
-    <input type="range" id="contour-opacity"
-           min="0" max="100" value="75">
-    <div class="basemap-note">
-      Displayed contour interval: 500 m. Higher-density 250 m and
-      100 m contours require separate vector tiles.
-    </div>
+  <aside class="sidebar" aria-label="Map controls">
+    <details class="panel-group" open>
+      <summary>Map Layers</summary>
+      <div class="panel-body">
+        <div class="layer-row">
+          <label for="contour-toggle">500 m Contours</label>
+          <input type="checkbox" id="contour-toggle" checked>
+        </div>
+        <details class="contour-options">
+          <summary>Contour settings <span>500 m interval</span></summary>
+          <div class="contour-options-body">
+            <div class="layer-row">
+              <label for="label-toggle">Contour labels</label>
+              <input type="checkbox" id="label-toggle" checked>
+            </div>
+            <div class="slider-label">
+              <label for="contour-opacity">Contour opacity</label>
+              <span id="opacity-value">75%</span>
+            </div>
+            <input type="range" id="contour-opacity"
+                   min="0" max="100" value="75">
+            <div class="basemap-note">
+              250 m and 100 m intervals require additional contour tiles.
+            </div>
+          </div>
+        </details>
+        <div class="layer-row">
+          <label for="sprfmo-toggle">SPRFMO Research Areas</label>
+          <input type="checkbox" id="sprfmo-toggle" checked>
+        </div>
+        <div class="info" style="font-size:11px; margin-top:-4px;">
+          Gold: exact research polygons · Dashed: schematic boundary
+        </div>
+        <div class="info aoi-legend">
+          <span class="aoi-legend-key"></span>AOI — Southern Ocean project area
+        </div>
 
     <div class="depth-section">
       <div class="layer-row" style="margin:0;">
@@ -413,19 +559,24 @@
         GEBCO 2026 · Not for navigation.
       </div>
     </div>
-
-
-    <div class="divider"></div>
-    <div class="section-title">Research Area Navigator</div>
-    <details class="research-group" open>
-      <summary>Choose an area to locate and inspect</summary>
-      <div class="research-list" id="research-area-list" aria-live="polite">
-        <span class="tool-status">Loading research areas…</span>
       </div>
     </details>
 
-    <div class="divider"></div>
-    <div class="section-title">Navigation &amp; Tools</div>
+    <details class="panel-group">
+      <summary>Research Area Navigator</summary>
+      <div class="panel-body">
+        <p class="info" style="margin:3px 0 10px;">
+          Choose a research block to locate it and view its details.
+        </p>
+        <div class="research-list" id="research-area-list" aria-live="polite">
+          <span class="tool-status">Loading research areas…</span>
+        </div>
+      </div>
+    </details>
+
+    <details class="panel-group">
+      <summary>Navigation &amp; Tools</summary>
+      <div class="panel-body">
     <form id="coordinate-go-form">
       <div class="coordinate-entry">
         <div>
@@ -450,10 +601,13 @@
       <button class="tool-button" id="measure-clear" type="button">Clear</button>
     </div>
     <div class="tool-status" id="measure-status" aria-live="polite">Click Measure, then click points on the map. Double-click to finish.</div>
+      </div>
+    </details>
 
-    <div class="divider"></div>
-    <div class="section-title">Dataset Information</div>
-    <div class="info">
+    <details class="panel-group">
+      <summary>Dataset Information</summary>
+      <div class="panel-body">
+<div class="info">
       <strong>Bathymetry:</strong> GEBCO<br>
       <strong>Contours:</strong> 500 m interval<br>
       <strong>Projection:</strong> Web Mercator<br>
@@ -461,6 +615,13 @@
       <strong>Research areas:</strong> SPRFMO (20 Aug 2026)<br>
       <span style="font-size:11px;">Research boundaries are a plotting aid, not legal fishing limits.</span>
     </div>
+        <div class="basemap-note" style="margin-top:10px;">
+          AOI outline: 130–170°E, 50–60°S (project extent).
+          Numerical depth coverage extends outside the AOI but is incomplete
+          farther south; depth tiles are not available globally.
+        </div>
+      </div>
+    </details>
   </aside>
 
   <div class="coordinates" id="coordinates">
@@ -747,7 +908,7 @@
         });
     }
 
-    toggleLayer("bathymetry-toggle", "gebco-bathymetry");
+    // GEBCO WMS is always available as the global underlay.
     toggleLayer("contour-toggle", "contour-lines");
     toggleLayer("label-toggle", "contour-labels");
 
@@ -791,6 +952,7 @@
   </script>
   <script src="./tools.js"></script>
   <script src="./depth.js?v=red-20261110"></script>
-  <script src="./basemap.js?v=styles-20261110-a"></script>
+  <script src="./basemap.js?v=20261110-layout2"></script>
+  <script src="./aoi.js?v=20261110-a"></script>
 </body>
 </html>

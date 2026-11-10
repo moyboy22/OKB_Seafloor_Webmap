@@ -2,6 +2,8 @@
  * All custom styles are optional overlays on the original GEBCO WMS.
  * No map.setStyle() call, so sources, contours, research areas and tools persist.
  * Select "Original GEBCO" to disable both layers immediately.
+ * Ocean Relief is the default; GEBCO WMS is styled globally outside DEM coverage.
+ * At zoom >= 10, WMS reverts to its original appearance for close inspection.
  * Source is the same validated GEBCO 2026 raster-dem PMTiles used by depth.js.
  */
 (() => {
@@ -12,6 +14,67 @@
   const select = document.getElementById("basemap-style");
   const shadeControl = document.getElementById("basemap-shade");
   const status = document.getElementById("basemap-status");
+  const widget = document.getElementById("basemap-widget");
+  const button = document.getElementById("basemap-button");
+  const popover = document.getElementById("basemap-popover");
+  let renderedWmsMode = null;
+  const originalWms = {
+    "raster-opacity": 0.95,
+    "raster-contrast": 0.07,
+    "raster-saturation": 0,
+    "raster-hue-rotate": 0,
+    "raster-brightness-min": 0,
+    "raster-brightness-max": 1
+  };
+  // Global rendered GEBCO WMS cannot provide per-pixel numerical depths.
+  // These values create cohesive, low-cost backdrops outside the local DEM.
+  const wmsAppearances = {
+    original: originalWms,
+    ocean: {
+      "raster-opacity": 1,
+      "raster-contrast": 0.14,
+      "raster-saturation": -0.30,
+      "raster-hue-rotate": 0,
+      "raster-brightness-min": 0,
+      "raster-brightness-max": 0.64
+    },
+    chart: {
+      "raster-opacity": 1,
+      "raster-contrast": 0.16,
+      "raster-saturation": 0.04,
+      "raster-hue-rotate": 0,
+      "raster-brightness-min": 0,
+      "raster-brightness-max": 0.86
+    }
+  };
+
+  function setPanelOpen(open) {
+    popover.hidden = !open;
+    button.setAttribute("aria-expanded", String(open));
+  }
+  button.addEventListener("click", () => setPanelOpen(popover.hidden));
+  document.addEventListener("pointerdown", event => {
+    if (!popover.hidden && !widget.contains(event.target)) setPanelOpen(false);
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && !popover.hidden) {
+      setPanelOpen(false);
+      button.focus();
+    }
+  });
+
+  function styleGlobalWms(mode) {
+    if (!map.getLayer("gebco-bathymetry")) return;
+    // Ocean relief uses the existing GEBCO WMS across the whole map.
+    // Avoid overscaled elevation shading on close zooms: use original WMS.
+    const effective = map.getZoom() >= 10 ? "original" : mode;
+    if (effective === renderedWmsMode) return;
+    const values = wmsAppearances[effective] || originalWms;
+    for (const [key, value] of Object.entries(values)) {
+      map.setPaintProperty("gebco-bathymetry", key, value);
+    }
+    renderedWmsMode = effective;
+  }
 
   // Constant-elevation color ramps. At +32767 m (encoded NoData),
   // both styles are fully transparent and the original WMS remains visible.
@@ -122,7 +185,10 @@
     visibility(reliefId, false);
     visibility(shadeId, false);
     select.value = "original";
+    shadeControl.disabled = true;
     contourColours("original");
+    try { styleGlobalWms("original"); }
+    catch (error) { console.warn("Could not reset GEBCO paint:", error); }
     message(reason || "Original GEBCO WMS restored; all other map layers remain.", !!reason);
   }
 
@@ -137,8 +203,15 @@
         restoreOriginal("Unknown basemap option: returned to Original GEBCO.");
         return;
       }
+      // Global image styling does not require the numerical DEM archive.
+      // Apply it before attempting local colour relief/hillshade.
+      shadeControl.disabled = false;
+      styleGlobalWms(mode);
       if (!prepareLayers()) {
-        message("Waiting for the depth tile archive. Original GEBCO remains underneath.");
+        visibility(reliefId, false);
+        visibility(shadeId, false);
+        message((mode === "ocean" ? "Ocean Relief" : "Fishing Chart") +
+          " global GEBCO backdrop active; numerical detail will appear when tiles load.");
         return;
       }
       map.setPaintProperty(reliefId, "color-relief-color", palettes[mode]);
@@ -154,7 +227,8 @@
       visibility(shadeId, shadeControl.checked);
       contourColours(mode);
       message((mode === "ocean" ? "Ocean Relief" : "Fishing Chart") +
-        " enabled. Original GEBCO fills gaps and returns beyond zoom 10.");
+        " across the map via GEBCO WMS; local DEM adds detail where available. " +
+        "Original GEBCO appears at zoom 10+.");
     } catch (error) {
       console.error("OKB basemap error; restoring GEBCO:", error);
       restoreOriginal("Custom basemap unavailable. Safely returned to Original GEBCO.");
@@ -164,9 +238,13 @@
   select.addEventListener("change", applyStyle);
   shadeControl.addEventListener("change", applyStyle);
   window.addEventListener("okb-depth-source-ready", applyStyle);
+  map.on("zoom", () => {
+    try { styleGlobalWms(select.value); }
+    catch (error) { console.warn("GEBCO zoom fallback:", error); }
+  });
   if (map.loaded()) applyStyle();
   else map.on("load", applyStyle);
 
-  // The default is intentionally Original GEBCO. No session persistence
-  // until custom rendering is field-tested; a refresh is always a safe reset.
+  // Ocean Relief is the default on each load; Original GEBCO is always
+  // one selection away and the pre-change commit is backed up.
 })();

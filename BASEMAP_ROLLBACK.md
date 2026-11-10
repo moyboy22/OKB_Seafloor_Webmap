@@ -1,39 +1,46 @@
-# Basemap rollback and safety
+# OKB Seafloor Explorer: basemap and UI rollback
 
-This project deliberately keeps `gebco-bathymetry` (the original GEBCO WMS)
-as the bottom layer. The optional `basemap.js` overlays use the same local
-GEBCO numerical depth PMTiles archive as the depth highlighter.
+## Current implementation
+- Floating basemap selector at the right of the map.
+- **Ocean Relief** is the default; **Fishing Chart** and **Original GEBCO** remain selectable.
+- All styles retain the original global GEBCO WMS as the base source.
+- Outside local numerical GEBCO depth tiles, Ocean Relief and Fishing Chart
+  apply colour/contrast transformations to the global rendered GEBCO WMS.
+  This is a visual backdrop, **not** global numeric bathymetry.
+- At zoom 10 and greater, custom numerical colour relief and hillshade are hidden,
+  and the original GEBCO WMS colours are restored, retaining close-zoom detail.
+- The box labelled AOI covers the original **130–170°E, 50–60°S project area**.
+  This is NOT the exact contour/DEM tile footprint. DEM valid coverage
+  extends roughly 113.84–179.9°E, 45–64.44°S.
+- The left sidebar consists of collapsible panels; contour labels and opacity
+  are inside the optional Contour settings disclosure.
 
-## Immediate rollback (no deployment needed)
-Choose **Basemap Style → Original GEBCO · Default**. This hides the
-Ocean Relief and Fishing Chart overlays without touching depth highlighting,
-research polygons, contours, or measurement tools. Refreshing the page also
-restores Original GEBCO as the default (custom selection is not persisted).
+## Fast on-screen rollback (no deployment)
+Tap the small **Basemap** layers button at the upper right and select
+**Original GEBCO**. Custom colour relief and hillshade are hidden;
+the original WMS rendering and all overlay tools remain in place.
 
-## Code rollback
-A snapshot of `main` before basemap work was saved to branch:
+## Guaranteed code rollback
+Before the current changes, commit `404d7c8b00e7b5694323e3279d04265becc012e3`
+was saved as a branch:
 
-`backup/gebco-basemap-before-style-selector-2026-11-10`
+`backup/before-ui-and-aoi-redesign-2026-11-10`
 
-At the GitHub repo, revert the single basemap-feature commit using the
-repository's commit history, or run:
+To undo only the new UI/AOI redesign, revert its single commit from the
+GitHub history, or from a local Git clone:
 
 ```sh
-git revert <basemap-feature-commit-sha>
+git revert <ui-aoi-redesign-commit-sha>
 git push origin main
 ```
 
-Reverting the feature commit removes `basemap.js`, the selector UI, and
-the shared DEM-ready event; it restores prior 500 m contour styling.
+The prior backup branch
+`backup/gebco-basemap-before-style-selector-2026-11-10`
+retains the earlier original-WMS-only design.
 
-Do not delete the `GEBCO_2026_TerrainRGB_Z7.pmtiles` archive. It is also
-used by the working depth highlighter.
-
-## Known limits
-- Existing raster DEM numerical coverage: approximately 113.84–179.9°E,
-  45–64.44°S (not the full requested 80°S).
-- Custom styles stop at map zoom 10 to avoid extreme overscaling of
-  the available zoom-7 DEM; the original WMS remains available.
-- Current contours remain genuine 500 m contours; 250 m and 100 m require
-  separate high-resolution contour processing.
-- GEBCO data are not for navigation or any safety-at-sea purpose.
+## Data and attribution guardrails
+- Do not delete `GEBCO_2026_TerrainRGB_Z7.pmtiles`: the working red
+  depth highlighter and new custom styles both use this source.
+- Contours still contain genuine 500 m lines only. The AOI frame is a
+  project reference, not a guarantee that all data are present everywhere.
+- GEBCO is not for navigation or other safety-at-sea decisions.
