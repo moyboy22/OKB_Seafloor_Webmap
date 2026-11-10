@@ -7,7 +7,11 @@
 (() => {
   "use strict";
 
-  const filename = "GEBCO_2026_TerrainRGB_Z8.pmtiles";
+  // Prefer full zoom-8 detail; accept browser-uploadable zoom-7 fallback.
+  const filenames = [
+    "GEBCO_2026_TerrainRGB_Z8.pmtiles",
+    "GEBCO_2026_TerrainRGB_Z7.pmtiles"
+  ];
   const sourceId = "okb-gebco-depth-dem";
   const layerId = "okb-depth-highlight";
   const enabled = document.getElementById("depth-enabled");
@@ -100,22 +104,29 @@
   async function initDepthHighlighter() {
     // The 76 MB archive is uploaded separately; don't break the working map.
     setMessage("Checking whether the GEBCO depth tiles are deployed…");
-    const assetUrl = new URL("./" + filename, window.location.href).href;
     try {
-      const response = await fetch(assetUrl, { method: "HEAD", cache: "no-store" });
-      if (!response.ok) throw new Error("HTTP " + response.status);
+      let selected = null;
+      for (const candidate of filenames) {
+        const url = new URL("./" + candidate, window.location.href).href;
+        try {
+          const response = await fetch(url, { method: "HEAD", cache: "no-store" });
+          if (response.ok) { selected = { url, candidate }; break; }
+        } catch (networkError) {
+          console.debug("Depth tile archive check:", candidate, networkError);
+        }
+      }
+      if (!selected) throw new Error("No matching PMTiles archive in site root");
       if (!map.getSource(sourceId)) {
         map.addSource(sourceId, {
           type: "raster-dem",
-          url: "pmtiles://" + assetUrl,
+          url: "pmtiles://" + selected.url,
           encoding: "custom",
           redFactor: 0,
           greenFactor: 256,
           blueFactor: 1,
           baseShift: -32768,
           tileSize: 256,
-          minzoom: 0,
-          maxzoom: 8,
+          // PMTiles TileJSON controls minzoom/maxzoom (7 or 8).
           attribution: "GEBCO Compilation Group (2026). Not for navigation."
         });
       }
@@ -135,12 +146,17 @@
       enabled.disabled = false;
       enabled.checked = true;
       updateDepthStyle();
+      const sourceLabel = selected.candidate.includes("_Z8") ? "zoom 8" : "zoom 7";
+      setMessage("GEBCO 2026 " + sourceLabel +
+        " depth tiles ready. Adjust the range or turn highlighting off.", "success");
     } catch (e) {
       sourceReady = false;
       enabled.disabled = true;
       enabled.checked = false;
-      setMessage("Depth tiles not available yet. Upload " + filename +
-        " to the GitHub repository root, then refresh.", "info");
+      setMessage("Depth tiles not available yet. Upload either " +
+        "GEBCO_2026_TerrainRGB_Z7.pmtiles (24 MB) or " +
+        "GEBCO_2026_TerrainRGB_Z8.pmtiles (76 MB) to the " +
+        "GitHub repository root, then refresh.", "info");
       console.info("Depth highlighter pending data:", e);
     }
   }
