@@ -25,7 +25,7 @@
 
   let sourceReady = false;
   const transparent = "rgba(0,0,0,0)";
-  const highlight = "rgba(35,246,146,1)";
+  const highlight = "rgba(255,48,48,1)";
 
   function setMessage(message, type = "info") {
     status.textContent = message;
