@@ -1,46 +1,52 @@
-# OKB Seafloor Explorer: basemap and UI rollback
+# Basemap and interface rollback (10 November 2026)
 
-## Current implementation
-- Floating basemap selector at the right of the map.
-- **Ocean Relief** is the default; **Fishing Chart** and **Original GEBCO** remain selectable.
-- All styles retain the original global GEBCO WMS as the base source.
-- Outside local numerical GEBCO depth tiles, Ocean Relief and Fishing Chart
-  apply colour/contrast transformations to the global rendered GEBCO WMS.
-  This is a visual backdrop, **not** global numeric bathymetry.
-- At zoom 10 and greater, custom numerical colour relief and hillshade are hidden,
-  and the original GEBCO WMS colours are restored, retaining close-zoom detail.
-- The box labelled AOI covers the original **130–170°E, 50–60°S project area**.
-  This is NOT the exact contour/DEM tile footprint. DEM valid coverage
-  extends roughly 113.84–179.9°E, 45–64.44°S.
-- The left sidebar consists of collapsible panels; contour labels and opacity
-  are inside the optional Contour settings disclosure.
+## Current design
 
-## Fast on-screen rollback (no deployment)
-Tap the small **Basemap** layers button at the upper right and select
-**Original GEBCO**. Custom colour relief and hillshade are hidden;
-the original WMS rendering and all overlay tools remain in place.
+- Floating basemap control on the map right.
+- **Ocean Relief** is the default global basemap: GEBCO_2026 shaded-relief
+  WMS (`gebco_2026`) styled consistently across global Web Mercator.
+- **Fishing Chart** uses GEBCO_2026 globally colour-coded flat-map WMS
+  (`gebco_2026_2`), with optional global relief detail.
+- The original `GEBCO_LATEST` WMS remains available as **Original GEBCO**
+  and automatically returns at zoom >= 10 in custom modes.
+- Regional `GEBCO_2026_TerrainRGB_Z7.pmtiles` is still used for the
+  *red numerical depth highlighter*, which defaults to 1000–2000 m.
+  It is NOT used for global basemap colours. Numeric highlighting is
+  only available within the uploaded raster's valid coverage.
+- Regional 500-m contours and SPRFMO layers are unchanged.
+- The former AOI rectangle and AOI layer script have been removed.
 
-## Guaranteed code rollback
-Before the current changes, commit `404d7c8b00e7b5694323e3279d04265becc012e3`
-was saved as a branch:
+The global WMS images are pre-coloured map images, not raw depth rasters.
+The Fishing Chart appearance must not be confused with a continuous
+globally numerical depth classification from our PMTiles.
+GEBCO is not for navigation or safety-at-sea purposes.
 
-`backup/before-ui-and-aoi-redesign-2026-11-10`
+## On-screen rollback
 
-To undo only the new UI/AOI redesign, revert its single commit from the
-GitHub history, or from a local Git clone:
+Tap the floating basemap selector (layers icon on map right), then choose
+**Original GEBCO**. It hides both alternative global WMS views.
+The remaining overlays, depth highlighter, navigation and measurement
+tools are unaffected.
+
+## Code rollback
+
+A guaranteed snapshot of `main` immediately before this global-WMS
+basemap and depth-default update was saved to:
+
+`backup/before-global-basemap-2026-11-10`
+
+To undo the full change in a local Git clone, revert the global-basemap
+commit shown in the repository's commit history:
 
 ```sh
-git revert <ui-aoi-redesign-commit-sha>
+git revert <global-basemap-commit-sha>
 git push origin main
 ```
 
-The prior backup branch
-`backup/gebco-basemap-before-style-selector-2026-11-10`
-retains the earlier original-WMS-only design.
+The previous backup `backup/before-ui-and-aoi-redesign-2026-11-10`
+is also retained.
 
-## Data and attribution guardrails
-- Do not delete `GEBCO_2026_TerrainRGB_Z7.pmtiles`: the working red
-  depth highlighter and new custom styles both use this source.
-- Contours still contain genuine 500 m lines only. The AOI frame is a
-  project reference, not a guarantee that all data are present everywhere.
-- GEBCO is not for navigation or other safety-at-sea decisions.
+Do not delete the 24 MB numerical depth PMTiles: it is required for
+the functioning highlighter. For a fully numerical globe-wide basemap
+in a future release, a separate global GEBCO raster processing and
+hosting pipeline will be necessary.

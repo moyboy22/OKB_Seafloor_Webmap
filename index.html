@@ -411,12 +411,6 @@
     .contour-options-body { padding: 1px 0 8px; }
     .contour-options-body .slider-label { margin-top: 6px; }
     .contour-options-body .layer-row { margin: 8px 0; }
-    .aoi-legend { margin-top: 10px; }
-    .aoi-legend-key {
-      display: inline-block; width: 14px; height: 10px;
-      border: 1.5px dashed #5ed7e3; vertical-align: middle;
-      margin-right: 6px; border-radius: 2px;
-    }
 
     @media (max-width: 600px) {
       .basemap-widget { right: 10px; top: 194px; }
@@ -470,18 +464,19 @@
       <label for="basemap-style" class="info">Bathymetric appearance</label>
       <select class="basemap-select" id="basemap-style" aria-describedby="basemap-status">
         <option value="ocean" selected>Ocean Relief · Navy / Cyan</option>
-        <option value="chart">Fishing Chart · Depth Bands</option>
+        <option value="chart">Fishing Chart · Global Depth Colours</option>
         <option value="original">Original GEBCO · Classic</option>
       </select>
       <div class="layer-row basemap-hillshade">
-        <label for="basemap-shade">Relief shading</label>
+        <label for="basemap-shade">Enhanced relief detail</label>
         <input type="checkbox" id="basemap-shade" checked>
       </div>
       <div class="basemap-note" id="basemap-status" role="status" aria-live="polite">
         Ocean Relief loads by default; original GEBCO remains available.
       </div>
       <div class="basemap-note basemap-footnote">
-        Global GEBCO backdrop · Numerical relief only where depth tiles exist.
+        Both custom basemaps use worldwide GEBCO 2026 imagery.
+        Only the depth highlighter and contours have regional coverage.
         Original GEBCO displays at close zoom.
       </div>
     </div>
@@ -520,9 +515,7 @@
         <div class="info" style="font-size:11px; margin-top:-4px;">
           Gold: exact research polygons · Dashed: schematic boundary
         </div>
-        <div class="info aoi-legend">
-          <span class="aoi-legend-key"></span>AOI — Southern Ocean project area
-        </div>
+        
 
     <div class="depth-section">
       <div class="layer-row" style="margin:0;">
@@ -532,11 +525,11 @@
       <div class="depth-inputs">
         <div>
           <label for="depth-min">Minimum depth (m)</label>
-          <input type="number" id="depth-min" value="3000" min="0" max="7999" step="1">
+          <input type="number" id="depth-min" value="1000" min="0" max="7999" step="1">
         </div>
         <div>
           <label for="depth-max">Maximum depth (m)</label>
-          <input type="number" id="depth-max" value="5000" min="1" max="8000" step="1">
+          <input type="number" id="depth-max" value="2000" min="1" max="8000" step="1">
         </div>
       </div>
       <div class="depth-presets" aria-label="Quick depth ranges">
@@ -616,9 +609,9 @@
       <span style="font-size:11px;">Research boundaries are a plotting aid, not legal fishing limits.</span>
     </div>
         <div class="basemap-note" style="margin-top:10px;">
-          AOI outline: 130–170°E, 50–60°S (project extent).
-          Numerical depth coverage extends outside the AOI but is incomplete
-          farther south; depth tiles are not available globally.
+          Basemaps: GEBCO 2026 global WMS. Numerical depth highlighting
+          and contours cover a smaller Southern Ocean region only.
+          Not for navigation or safety at sea.
         </div>
       </div>
     </details>
@@ -951,8 +944,7 @@
     });
   </script>
   <script src="./tools.js"></script>
-  <script src="./depth.js?v=red-20261110"></script>
-  <script src="./basemap.js?v=20261110-layout2"></script>
-  <script src="./aoi.js?v=20261110-a"></script>
+  <script src="./depth.js?v=1000-2000-20261110"></script>
+  <script src="./basemap.js?v=global-20261110"></script>
 </body>
 </html>

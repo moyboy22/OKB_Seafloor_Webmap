@@ -1,52 +1,41 @@
-/* OKAINS BAY bathymetric basemap modes (MapLibre GL JS 5.6.2).
- * All custom styles are optional overlays on the original GEBCO WMS.
- * No map.setStyle() call, so sources, contours, research areas and tools persist.
- * Select "Original GEBCO" to disable both layers immediately.
- * Ocean Relief is the default; GEBCO WMS is styled globally outside DEM coverage.
- * At zoom >= 10, WMS reverts to its original appearance for close inspection.
- * Source is the same validated GEBCO 2026 raster-dem PMTiles used by depth.js.
+/* OKAINS BAY — seamless global GEBCO 2026 basemaps.
+ *
+ * IMPORTANT:
+ * The small regional DEM PMTiles are only for numeric depth highlighting.
+ * Basemaps use separate GLOBAL GEBCO WMS layers, so no DEM rectangle/seams.
+ * Ocean Relief = GEBCO 2026 shaded bathymetry, colour-adjusted in MapLibre.
+ * Fishing Chart = GEBCO 2026 flat elevation colour map, with optional relief.
+ * Original GEBCO remains available and returns at zoom 10+.
  */
 (() => {
   "use strict";
-  const sourceId = "okb-gebco-depth-dem";
-  const reliefId = "okb-base-color-relief";
-  const shadeId = "okb-base-hillshade";
+
   const select = document.getElementById("basemap-style");
-  const shadeControl = document.getElementById("basemap-shade");
+  const reliefToggle = document.getElementById("basemap-shade");
   const status = document.getElementById("basemap-status");
   const widget = document.getElementById("basemap-widget");
   const button = document.getElementById("basemap-button");
   const popover = document.getElementById("basemap-popover");
-  let renderedWmsMode = null;
-  const originalWms = {
-    "raster-opacity": 0.95,
-    "raster-contrast": 0.07,
-    "raster-saturation": 0,
-    "raster-hue-rotate": 0,
-    "raster-brightness-min": 0,
-    "raster-brightness-max": 1
-  };
-  // Global rendered GEBCO WMS cannot provide per-pixel numerical depths.
-  // These values create cohesive, low-cost backdrops outside the local DEM.
-  const wmsAppearances = {
-    original: originalWms,
-    ocean: {
-      "raster-opacity": 1,
-      "raster-contrast": 0.14,
-      "raster-saturation": -0.30,
-      "raster-hue-rotate": 0,
-      "raster-brightness-min": 0,
-      "raster-brightness-max": 0.64
-    },
-    chart: {
-      "raster-opacity": 1,
-      "raster-contrast": 0.16,
-      "raster-saturation": 0.04,
-      "raster-hue-rotate": 0,
-      "raster-brightness-min": 0,
-      "raster-brightness-max": 0.86
-    }
-  };
+  const originalId = "gebco-bathymetry";
+  const oceanId = "okb-global-ocean";
+  const chartId = "okb-global-chart";
+  const chartShadeId = "okb-global-chart-shade";
+  const oceanSource = "okb-gebco-2026-shaded";
+  const chartSource = "okb-gebco-2026-flat";
+  const highZoomThreshold = 10;
+  let lastState = null;
+  let tileErrors = 0;
+
+  function getTiles(layerName) {
+    return [
+      "https://wms.gebco.net/2026/mapserv?" +
+      "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap" +
+      "&LAYERS=" + encodeURIComponent(layerName) +
+      "&STYLES=&FORMAT=image/png&TRANSPARENT=false" +
+      "&SRS=EPSG:3857&BBOX={bbox-epsg-3857}" +
+      "&WIDTH=256&HEIGHT=256"
+    ];
+  }
 
   function setPanelOpen(open) {
     popover.hidden = !open;
@@ -63,188 +52,164 @@
     }
   });
 
-  function styleGlobalWms(mode) {
-    if (!map.getLayer("gebco-bathymetry")) return;
-    // Ocean relief uses the existing GEBCO WMS across the whole map.
-    // Avoid overscaled elevation shading on close zooms: use original WMS.
-    const effective = map.getZoom() >= 10 ? "original" : mode;
-    if (effective === renderedWmsMode) return;
-    const values = wmsAppearances[effective] || originalWms;
-    for (const [key, value] of Object.entries(values)) {
-      map.setPaintProperty("gebco-bathymetry", key, value);
+  function message(text, warning = false) {
+    status.textContent = text;
+    status.style.color = warning ? "#ffbd98" : "#aec8d1";
+  }
+
+  function addGlobalSourcesAndLayers() {
+    // Fixed GEBCO 2026 global WMS sources, NOT regional raster-dem tiles.
+    if (!map.getSource(oceanSource)) {
+      map.addSource(oceanSource, {
+        type: "raster", tiles: getTiles("gebco_2026"), tileSize: 256,
+        attribution: "GEBCO Compilation Group (2026). Not for navigation."
+      });
     }
-    renderedWmsMode = effective;
-  }
+    if (!map.getSource(chartSource)) {
+      map.addSource(chartSource, {
+        type: "raster", tiles: getTiles("gebco_2026_2"), tileSize: 256,
+        attribution: "GEBCO Compilation Group (2026). Not for navigation."
+      });
+    }
 
-  // Constant-elevation color ramps. At +32767 m (encoded NoData),
-  // both styles are fully transparent and the original WMS remains visible.
-  const palettes = {
-    ocean: [
-      "interpolate", ["linear"], ["elevation"],
-      -32768, "rgba(0,0,0,0)",
-      -14000, "rgba(0,0,0,0)",
-      -12000, "#071928",
-      -7000, "#092337",
-      -6000, "#0c2c42",
-      -5000, "#11384e",
-      -4000, "#184f67",
-      -3000, "#267087",
-      -2000, "#438c9c",
-      -1000, "#66abb5",
-      -500, "#8dcdcb",
-      -100, "#bce1d8",
-      0, "#dcefe7",
-      1200, "#d1d3b8",
-      2800, "#b6b99d",
-      4000, "rgba(0,0,0,0)",
-      32767, "rgba(0,0,0,0)"
-    ],
-    chart: [
-      "interpolate", ["linear"], ["elevation"],
-      -32768, "rgba(0,0,0,0)",
-      -14000, "rgba(0,0,0,0)",
-      -12000, "#08254c",
-      -5001, "#08254c",
-      -5000, "#124a8a",
-      -4001, "#124a8a",
-      -4000, "#155f9e",
-      -3001, "#155f9e",
-      -3000, "#237eb9",
-      -2001, "#237eb9",
-      -2000, "#4b9fc8",
-      -1001, "#4b9fc8",
-      -1000, "#77bed6",
-      -501, "#77bed6",
-      -500, "#a0d8e2",
-      -201, "#a0d8e2",
-      -200, "#c8eaee",
-      -1, "#c8eaee",
-      0, "#e3f3ec",
-      2000, "#d5d9bb",
-      4000, "rgba(0,0,0,0)",
-      32767, "rgba(0,0,0,0)"
-    ]
-  };
-
-  function message(value, caution = false) {
-    status.textContent = value;
-    status.style.color = caution ? "#ffbd98" : "#aec8d1";
-  }
-
-  function visibility(id, visible) {
-    if (map.getLayer(id))
-      map.setLayoutProperty(id, "visibility", visible ? "visible" : "none");
-  }
-
-  function contourColours(mode) {
-    if (!map.getLayer("contour-lines")) return;
-    const line = mode === "chart" ? "#e8f8ff" :
-      mode === "ocean" ? "#c2e1e9" : "#b8edf7";
-    map.setPaintProperty("contour-lines", "line-color", line);
-  }
-
-  function prepareLayers() {
-    if (!map.getSource(sourceId)) return false;
-    const beforeId = map.getLayer("okb-depth-highlight")
+    // All basemap layers must remain BELOW the red numerical highlighter,
+    // contours and research areas.
+    const before = map.getLayer("okb-depth-highlight")
       ? "okb-depth-highlight"
       : map.getLayer("contour-lines") ? "contour-lines" : undefined;
-    if (!map.getLayer(reliefId)) {
+
+    if (!map.getLayer(oceanId)) {
       map.addLayer({
-        id: reliefId,
-        type: "color-relief",
-        source: sourceId,
-        maxzoom: 10,
+        id: oceanId, type: "raster", source: oceanSource, maxzoom: highZoomThreshold,
         layout: { visibility: "none" },
         paint: {
-          "color-relief-color": palettes.ocean,
-          "color-relief-opacity": 1
+          "raster-opacity": 1,
+          "raster-contrast": 0.16,
+          "raster-saturation": -0.24,
+          "raster-brightness-min": 0,
+          "raster-brightness-max": 0.78
         }
-      }, beforeId);
+      }, before);
     }
-    if (!map.getLayer(shadeId)) {
+
+    if (!map.getLayer(chartId)) {
       map.addLayer({
-        id: shadeId,
-        type: "hillshade",
-        source: sourceId,
-        maxzoom: 10,
+        id: chartId, type: "raster", source: chartSource, maxzoom: highZoomThreshold,
         layout: { visibility: "none" },
         paint: {
-          "hillshade-exaggeration": 0.22,
-          "hillshade-illumination-direction": 315,
-          "hillshade-illumination-anchor": "viewport",
-          "hillshade-highlight-color": "#b6e4e9",
-          "hillshade-shadow-color": "#071b2d",
-          "hillshade-accent-color": "#23556d"
+          "raster-opacity": 1,
+          "raster-contrast": 0.09,
+          "raster-saturation": 0.08,
+          "raster-brightness-min": 0,
+          "raster-brightness-max": 0.97
         }
-      }, beforeId);
+      }, before);
     }
-    return true;
+
+    // A light, full-globe shaded-relief overlay for the flat-map mode.
+    if (!map.getLayer(chartShadeId)) {
+      map.addLayer({
+        id: chartShadeId, type: "raster", source: oceanSource,
+        maxzoom: highZoomThreshold,
+        layout: { visibility: "none" },
+        paint: {
+          "raster-opacity": 0.17,
+          "raster-saturation": -0.70,
+          "raster-contrast": 0.22
+        }
+      }, before);
+    }
   }
 
-  function restoreOriginal(reason) {
-    visibility(reliefId, false);
-    visibility(shadeId, false);
-    select.value = "original";
-    shadeControl.disabled = true;
-    contourColours("original");
-    try { styleGlobalWms("original"); }
-    catch (error) { console.warn("Could not reset GEBCO paint:", error); }
-    message(reason || "Original GEBCO WMS restored; all other map layers remain.", !!reason);
+  function visible(id, value) {
+    if (!map.getLayer(id)) return;
+    const target = value ? "visible" : "none";
+    if (map.getLayoutProperty(id, "visibility") !== target)
+      map.setLayoutProperty(id, "visibility", target);
   }
 
-  function applyStyle() {
-    const mode = select.value;
+  function applyColours(mode) {
+    if (!map.getLayer("contour-lines")) return;
+    const colour = mode === "chart" ? "#ecf8ff" :
+      mode === "ocean" ? "#cae5ec" : "#b8edf7";
+    map.setPaintProperty("contour-lines", "line-color", colour);
+  }
+
+  function applyMode() {
     try {
-      if (mode === "original") {
-        restoreOriginal();
+      const mode = select.value;
+      const close = map.getZoom() >= highZoomThreshold;
+      if (!["original", "ocean", "chart"].includes(mode)) {
+        select.value = "original";
+        applyMode();
         return;
       }
-      if (!palettes[mode]) {
-        restoreOriginal("Unknown basemap option: returned to Original GEBCO.");
-        return;
-      }
-      // Global image styling does not require the numerical DEM archive.
-      // Apply it before attempting local colour relief/hillshade.
-      shadeControl.disabled = false;
-      styleGlobalWms(mode);
-      if (!prepareLayers()) {
-        visibility(reliefId, false);
-        visibility(shadeId, false);
-        message((mode === "ocean" ? "Ocean Relief" : "Fishing Chart") +
-          " global GEBCO backdrop active; numerical detail will appear when tiles load.");
-        return;
-      }
-      map.setPaintProperty(reliefId, "color-relief-color", palettes[mode]);
-      map.setPaintProperty(shadeId, "hillshade-exaggeration", mode === "ocean" ? 0.22 : 0.12);
-      map.setPaintProperty(shadeId, "hillshade-shadow-color",
-        mode === "ocean" ? "#071b2d" : "#184a68");
-      map.setPaintProperty(shadeId, "hillshade-highlight-color",
-        mode === "ocean" ? "#b6e4e9" : "#ffffff");
-      map.setPaintProperty(shadeId, "hillshade-accent-color",
-        mode === "ocean" ? "#23556d" : "#387b9e");
 
-      visibility(reliefId, true);
-      visibility(shadeId, shadeControl.checked);
-      contourColours(mode);
-      message((mode === "ocean" ? "Ocean Relief" : "Fishing Chart") +
-        " across the map via GEBCO WMS; local DEM adds detail where available. " +
-        "Original GEBCO appears at zoom 10+.");
+      addGlobalSourcesAndLayers();
+      const state = [mode, close, reliefToggle.checked].join(":");
+      if (lastState === state) return;
+      lastState = state;
+
+      // Only one global WMS basemap is active at a time; no regional seam.
+      visible(originalId, mode === "original" || close);
+      visible(oceanId, mode === "ocean" && !close);
+      visible(chartId, mode === "chart" && !close);
+      visible(chartShadeId, mode === "chart" && !close && reliefToggle.checked);
+
+      // The global Ocean WMS already has relief baked in. The checkbox
+      // adjusts its definition, not an unavailable numerical hillshade.
+      if (map.getLayer(oceanId)) {
+        map.setPaintProperty(oceanId, "raster-contrast",
+          reliefToggle.checked ? 0.16 : 0.05);
+      }
+      applyColours(mode);
+
+      reliefToggle.disabled = mode === "original";
+      if (mode === "original") {
+        message("Original GEBCO shaded imagery across the globe.");
+      } else if (close) {
+        message("Zoom 10+: original GEBCO detail is displayed. Zoom out to view " +
+          (mode === "ocean" ? "Ocean Relief." : "Fishing Chart."));
+      } else if (mode === "ocean") {
+        message("Worldwide GEBCO 2026 shaded relief. No regional basemap edges.");
+      } else {
+        message("Worldwide GEBCO 2026 depth-coloured chart imagery.");
+      }
     } catch (error) {
-      console.error("OKB basemap error; restoring GEBCO:", error);
-      restoreOriginal("Custom basemap unavailable. Safely returned to Original GEBCO.");
+      console.error("Basemap change failed; returning to original GEBCO:", error);
+      select.value = "original";
+      lastState = null;
+      // The original GEBCO layer is pre-existing and known to work.
+      try {
+        visible(originalId, true);
+        visible(oceanId, false);
+        visible(chartId, false);
+        visible(chartShadeId, false);
+      } catch (restoreError) {
+        console.error("Could not restore original GEBCO:", restoreError);
+      }
+      message("Basemap issue: Original GEBCO restored.", true);
     }
   }
 
-  select.addEventListener("change", applyStyle);
-  shadeControl.addEventListener("change", applyStyle);
-  window.addEventListener("okb-depth-source-ready", applyStyle);
-  map.on("zoom", () => {
-    try { styleGlobalWms(select.value); }
-    catch (error) { console.warn("GEBCO zoom fallback:", error); }
+  select.addEventListener("change", () => { tileErrors = 0; applyMode(); });
+  reliefToggle.addEventListener("change", applyMode);
+  map.on("zoom", applyMode);
+  map.on("error", event => {
+    // Auto-revert only after repeated failures from the active WMS source.
+    const src = event.sourceId || event.source?.id;
+    const active = select.value === "ocean" ? oceanSource :
+      select.value === "chart" ? chartSource : null;
+    if (!active || src !== active) return;
+    tileErrors += 1;
+    if (tileErrors < 3) return;
+    console.warn("Global basemap WMS unavailable; reverting to classic.", event.error);
+    select.value = "original";
+    lastState = null;
+    applyMode();
+    message("Global 2026 service unavailable; Original GEBCO restored.", true);
   });
-  if (map.loaded()) applyStyle();
-  else map.on("load", applyStyle);
 
-  // Ocean Relief is the default on each load; Original GEBCO is always
-  // one selection away and the pre-change commit is backed up.
+  if (map.loaded()) applyMode();
+  else map.on("load", applyMode);
 })();

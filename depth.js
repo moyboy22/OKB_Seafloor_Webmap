@@ -144,7 +144,7 @@
           source: sourceId,
           layout: { visibility: "none" },
           paint: {
-            "color-relief-color": colorForDepths(3000, 5000),
+            "color-relief-color": colorForDepths(1000, 2000),
             "color-relief-opacity": 0.72
           }
         }, map.getLayer("contour-lines") ? "contour-lines" : undefined);
