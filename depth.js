@@ -150,6 +150,11 @@
         }, map.getLayer("contour-lines") ? "contour-lines" : undefined);
       }
       sourceReady = true;
+      // Share the validated DEM source with optional basemap styling.
+      // Consumers that load later can also discover it with map.getSource().
+      window.dispatchEvent(new CustomEvent("okb-depth-source-ready", {
+        detail: { sourceId, archive: selected.candidate }
+      }));
       enabled.disabled = false;
       enabled.checked = true;
       updateDepthStyle();
