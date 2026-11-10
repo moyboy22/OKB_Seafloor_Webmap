@@ -49,7 +49,9 @@
     // Small ramps at the boundaries give an effectively discrete highlight
     // while using MapLibre's documented interpolate/elevation expression.
     const deepElevation = -deep, shallowElevation = -shallow;
-    const edge = Math.min(0.2, (deep - shallow) / 4);
+    // DEM tiles are encoded at 1-metre precision. Sub-metre stops
+    // collapse to the same packed elevation and can corrupt the ramp.
+    const edge = 1;
     return [
       "interpolate", ["linear"], ["elevation"],
       -32768, transparent,
@@ -142,7 +144,7 @@
           source: sourceId,
           layout: { visibility: "none" },
           paint: {
-            "color-relief-color": colorForDepths(500, 1000),
+            "color-relief-color": colorForDepths(3000, 5000),
             "color-relief-opacity": 0.72
           }
         }, map.getLayer("contour-lines") ? "contour-lines" : undefined);
