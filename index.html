@@ -150,8 +150,8 @@
 
     .coordinates {
       position: absolute;
-      left: 16px;
-      bottom: 35px;
+      right: 14px;
+      bottom: 16px;
       z-index: 2;
       background: rgba(9, 29, 46, 0.94);
       border: 1px solid var(--border);
@@ -165,8 +165,9 @@
       top: 76px;
     }
 
+    /* Keep the scale bar and attribution above the coordinate readout. */
     .maplibregl-ctrl-bottom-right {
-      bottom: 24px;
+      bottom: 70px;
     }
 
 
@@ -213,10 +214,11 @@
         padding: 14px;
       }
       .coordinates {
-        left: 10px;
-        bottom: 32px;
+        right: 10px;
+        bottom: 14px;
         font-size: 10px;
       }
+      .maplibregl-ctrl-bottom-right { bottom: 62px; }
     }
   </style>
 </head>
