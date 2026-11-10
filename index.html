@@ -57,6 +57,15 @@
       font-size: 22px;
     }
 
+
+    .okb-wordmark {
+      width: 196px;
+      height: 26px;
+      flex-shrink: 0;
+      object-fit: contain;
+      display: block;
+    }
+
     .brand h1 {
       font-size: 17px;
       letter-spacing: 1px;
@@ -76,6 +85,9 @@
       z-index: 2;
       width: 290px;
       max-width: calc(100vw - 32px);
+      max-height: calc(100vh - 105px);
+      overflow-y: auto;
+      scrollbar-width: thin;
       padding: 20px;
       background: rgba(9, 29, 46, 0.94);
       border: 1px solid var(--border);
@@ -157,7 +169,42 @@
       bottom: 24px;
     }
 
+
+    .research-group summary { cursor:pointer; color:#dff5f8; font-size:12px; padding:8px 0; }
+    .research-list { margin-top:7px; display:grid; gap:6px; }
+    .research-item {
+      width:100%; padding:9px 10px; border:1px solid var(--border);
+      background:#132f45; color:#fff; text-align:left; border-radius:6px;
+      cursor:pointer; font:inherit;
+    }
+    .research-item strong { display:block; font-size:12px; }
+    .research-item small { display:block; color:var(--muted); margin-top:2px; font-size:11px; }
+    .research-item:hover, .research-item:focus-visible, .research-item.active {
+      border-color:#f5c66d; background:#213c50; outline-offset:2px;
+    }
+    .tool-row { display:flex; gap:8px; margin:9px 0; }
+    .tool-button {
+      cursor:pointer; background:#15394d; border:1px solid #426b7b;
+      color:#edf8fa; border-radius:6px; padding:9px 10px;
+      font-size:12px; flex:1; min-width:0;
+    }
+    .tool-button:hover, .tool-button:focus-visible { background:#215166; }
+    .tool-button.active { background:#246979; border-color:#6de1e6; }
+    .coordinate-entry { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .coordinate-entry input {
+      width:100%; min-width:0; background:#091d2e; color:#fff;
+      border:1px solid #416174; border-radius:5px; padding:8px 6px;
+      font-size:12px;
+    }
+    .coordinate-entry label { display:block; color:var(--muted);font-size:11px;margin-bottom:4px; }
+    .tool-status { color:var(--muted);font-size:11px;line-height:1.5;margin-top:7px; }
+    #measure-status { min-height:34px; }
+    .coordinates { cursor:copy; }
+
     @media (max-width: 600px) {
+      .okb-wordmark { width: 149px; height: auto; }
+      .brand h1 { font-size: 12px; letter-spacing: 0.4px; }
+      .brand p { display: none; }
       .topbar { padding: 0 12px; }
       .sidebar {
         top: 76px;
@@ -178,9 +225,9 @@
   <div id="map"></div>
 
   <header class="topbar">
-    <div class="brand-icon">≋</div>
+    <img class="okb-wordmark" src="./assets/okains_bay_logo.png" alt="OKAINS BAY">
     <div class="brand">
-      <h1>OKB SEAFLOOR EXPLORER</h1>
+      <h1>SEAFLOOR EXPLORER</h1>
       <p>Southern Ocean | Bathymetric Mapping Platform</p>
     </div>
   </header>
@@ -218,8 +265,44 @@
     <input type="range" id="contour-opacity"
            min="0" max="100" value="75">
 
-    <div class="divider"></div>
 
+    <div class="divider"></div>
+    <div class="section-title">Research Area Navigator</div>
+    <details class="research-group" open>
+      <summary>Choose an area to locate and inspect</summary>
+      <div class="research-list" id="research-area-list" aria-live="polite">
+        <span class="tool-status">Loading research areas…</span>
+      </div>
+    </details>
+
+    <div class="divider"></div>
+    <div class="section-title">Navigation &amp; Tools</div>
+    <form id="coordinate-go-form">
+      <div class="coordinate-entry">
+        <div>
+          <label for="go-latitude">Latitude</label>
+          <input id="go-latitude" aria-label="Latitude" placeholder="55°30'S" autocomplete="off">
+        </div>
+        <div>
+          <label for="go-longitude">Longitude</label>
+          <input id="go-longitude" aria-label="Longitude" placeholder="160°E" autocomplete="off">
+        </div>
+      </div>
+      <div class="tool-row">
+        <button class="tool-button" type="submit">Go to coordinates</button>
+        <button class="tool-button" id="reset-view" type="button">Reset view</button>
+      </div>
+      <div class="tool-status" id="coordinate-status" aria-live="polite">
+        Decimal degrees or DMS accepted. Latitude first.
+      </div>
+    </form>
+    <div class="tool-row">
+      <button class="tool-button" id="measure-toggle" type="button" aria-pressed="false">Measure distance</button>
+      <button class="tool-button" id="measure-clear" type="button">Clear</button>
+    </div>
+    <div class="tool-status" id="measure-status" aria-live="polite">Click Measure, then click points on the map. Double-click to finish.</div>
+
+    <div class="divider"></div>
     <div class="section-title">Dataset Information</div>
     <div class="info">
       <strong>Bathymetry:</strong> GEBCO<br>
@@ -280,7 +363,8 @@
           {
             id: "gebco-bathymetry",
             type: "raster",
-            source: "gebco"
+            source: "gebco",
+            paint: { "raster-opacity": 0.95, "raster-contrast": 0.07 }
           }
         ]
       }
@@ -316,7 +400,7 @@
         minzoom: 5,
         maxzoom: 14,
         paint: {
-          "line-color": "#e3f2f8",
+          "line-color": "#b8edf7",
           "line-width": [
             "interpolate", ["linear"], ["zoom"],
             5, 0.5,
@@ -349,9 +433,9 @@
           "text-allow-overlap": false
         },
         paint: {
-          "text-color": "#ffffff",
+          "text-color": "#e8faff",
           "text-halo-color": "#102b40",
-          "text-halo-width": 1.5
+          "text-halo-width": 1.8
         }
       });
       // Small GeoJSON overlay; no tile conversion or additional hosting required.
@@ -444,6 +528,7 @@
       ];
 
       function showResearchPopup(event) {
+        if (window.okbMeasurementActive) return;
         const f = event.features && event.features[0];
         if (!f) return;
         const p = f.properties || {};
@@ -480,6 +565,9 @@
         new maplibregl.Popup({ closeButton: true, maxWidth: "360px" })
           .setLngLat(event.lngLat).setDOMContent(popup).addTo(map);
       }
+
+      window.okbOpenResearchPopup = (feature, lngLat) =>
+        showResearchPopup({ features: [feature], lngLat });
 
       for (const layerId of ["sprfmo-fill", "sprfmo-line-hit", "sprfmo-labels"]) {
         map.on("click", layerId, showResearchPopup);
@@ -550,5 +638,6 @@
       console.error("MapLibre error:", event.error);
     });
   </script>
+  <script src="./tools.js"></script>
 </body>
 </html>
