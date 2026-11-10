@@ -3,22 +3,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OKB | Seafloor Explorer</title>
 
-  <link
-    href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css"
-    rel="stylesheet"
-  >
+  <link href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css" rel="stylesheet">
 
   <style>
+    :root {
+      --navy: #091d2e;
+      --panel: #102b40;
+      --border: #29485e;
+      --accent: #46c4cf;
+      --muted: #9cb5c4;
+    }
+
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #081c2c;
-      color: white;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: #fff;
+      background: var(--navy);
     }
 
     #map {
@@ -26,46 +31,260 @@
       inset: 0;
     }
 
-    .header {
+    .topbar {
       position: absolute;
-      top: 16px;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 66px;
+      z-index: 3;
+      background: rgba(9, 29, 46, 0.96);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+    }
+
+
+    .okb-wordmark {
+      width: 196px;
+      height: 26px;
+      flex-shrink: 0;
+      object-fit: contain;
+      display: block;
+    }
+
+    .brand h1 {
+      font-size: 17px;
+      letter-spacing: 1px;
+      margin: 0;
+    }
+
+    .brand p {
+      font-size: 11px;
+      color: var(--muted);
+      margin: 4px 0 0;
+    }
+
+    .sidebar {
+      position: absolute;
+      top: 82px;
       left: 16px;
       z-index: 2;
-      padding: 16px 22px;
-      background: rgba(8, 28, 44, 0.92);
-      border-radius: 8px;
+      width: 290px;
+      max-width: calc(100vw - 32px);
+      max-height: calc(100vh - 105px);
+      overflow-y: auto;
+      scrollbar-width: thin;
+      padding: 20px;
+      background: rgba(9, 29, 46, 0.94);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.22);
     }
 
-    .header h1 {
-      margin: 0 0 5px;
-      font-size: 20px;
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 16px;
     }
 
-    .header p {
-      margin: 0;
+    .layer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 13px 0;
+      font-size: 13px;
+    }
+
+    .layer-row label {
+      cursor: pointer;
+    }
+
+    input[type="checkbox"] {
+      accent-color: var(--accent);
+      width: 17px;
+      height: 17px;
+      cursor: pointer;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
       font-size: 12px;
-      color: #a9c2d2;
+      color: var(--muted);
+      margin-top: 16px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
+    }
+
+    .info {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
     }
 
     .coordinates {
       position: absolute;
-      bottom: 25px;
-      left: 16px;
+      right: 14px;
+      bottom: 16px;
       z-index: 2;
+      background: rgba(9, 29, 46, 0.94);
+      border: 1px solid var(--border);
       padding: 10px 14px;
-      background: rgba(8, 28, 44, 0.92);
       border-radius: 6px;
-      font-size: 13px;
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
     }
 
-    .attribution {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      z-index: 2;
-      padding: 4px 8px;
-      background: rgba(8, 28, 44, 0.8);
+    .maplibregl-ctrl-top-right {
+      top: 76px;
+    }
+
+    /* Keep the scale bar and attribution above the coordinate readout. */
+    .maplibregl-ctrl-bottom-right {
+      bottom: 70px;
+    }
+
+
+
+    .depth-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      margin: 11px 0 12px;
+    }
+    .depth-inputs label {
       font-size: 11px;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 5px;
+    }
+    .depth-inputs input {
+      width: 100%;
+      min-width: 0;
+      padding: 8px 6px;
+      color: #fff;
+      background: #0a2132;
+      border: 1px solid #426778;
+      border-radius: 6px;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+    .depth-presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 9px 0 10px;
+    }
+    .depth-preset {
+      border: 1px solid #315b6b;
+      background: #17394b;
+      color: #cce6eb;
+      border-radius: 5px;
+      padding: 5px 7px;
+      cursor: pointer;
+      font: 11px "Segoe UI", Arial, sans-serif;
+    }
+    .depth-preset:hover, .depth-preset:focus-visible {
+      border-color: #44e9a1;
+      color: #fff;
+    }
+    .depth-notice {
+      font-size: 11px;
+      line-height: 1.5;
+      color: #afc4ce;
+      min-height: 32px;
+    }
+    .depth-swatch {
+      display: inline-block;
+      width: 11px;
+      height: 11px;
+      background: #23f692;
+      border-radius: 2px;
+      vertical-align: -1px;
+      margin-right: 7px;
+    }
+    .depth-section {
+      background: rgba(11, 38, 53, 0.55);
+      border: 1px solid #29485e;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 16px;
+    }
+
+    .research-group summary { cursor:pointer; color:#dff5f8; font-size:12px; padding:8px 0; }
+    .research-list { margin-top:7px; display:grid; gap:6px; }
+    .research-item {
+      width:100%; padding:9px 10px; border:1px solid var(--border);
+      background:#132f45; color:#fff; text-align:left; border-radius:6px;
+      cursor:pointer; font:inherit;
+    }
+    .research-item strong { display:block; font-size:12px; }
+    .research-item small { display:block; color:var(--muted); margin-top:2px; font-size:11px; }
+    .research-item:hover, .research-item:focus-visible, .research-item.active {
+      border-color:#f5c66d; background:#213c50; outline-offset:2px;
+    }
+    .tool-row { display:flex; gap:8px; margin:9px 0; }
+    .tool-button {
+      cursor:pointer; background:#15394d; border:1px solid #426b7b;
+      color:#edf8fa; border-radius:6px; padding:9px 10px;
+      font-size:12px; flex:1; min-width:0;
+    }
+    .tool-button:hover, .tool-button:focus-visible { background:#215166; }
+    .tool-button.active { background:#246979; border-color:#6de1e6; }
+    .coordinate-entry { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .coordinate-entry input {
+      width:100%; min-width:0; background:#091d2e; color:#fff;
+      border:1px solid #416174; border-radius:5px; padding:8px 6px;
+      font-size:12px;
+    }
+    .coordinate-entry label { display:block; color:var(--muted);font-size:11px;margin-bottom:4px; }
+    .tool-status { color:var(--muted);font-size:11px;line-height:1.5;margin-top:7px; }
+    #measure-status { min-height:34px; }
+    .coordinates { cursor:copy; }
+
+    @media (max-width: 600px) {
+      .okb-wordmark { width: 149px; height: auto; }
+      .brand h1 { font-size: 12px; letter-spacing: 0.4px; }
+      .brand p { display: none; }
+      .topbar { padding: 0 12px; }
+      .sidebar {
+        top: 76px;
+        left: 10px;
+        width: 250px;
+        padding: 14px;
+      }
+      .coordinates {
+        right: 10px;
+        bottom: 14px;
+        font-size: 10px;
+      }
+      .maplibregl-ctrl-bottom-right { bottom: 62px; }
     }
   </style>
 </head>
@@ -73,34 +292,168 @@
 <body>
   <div id="map"></div>
 
-  <div class="header">
-    <h1>OKB Seafloor Explorer</h1>
-    <p>Southern Ocean Bathymetric Mapping</p>
-  </div>
+  <header class="topbar">
+    <img class="okb-wordmark" src="./assets/okains_bay_logo.png" alt="OKAINS BAY">
+    <div class="brand">
+      <h1>SEAFLOOR EXPLORER</h1>
+      <p>Southern Ocean | Bathymetric Mapping Platform</p>
+    </div>
+  </header>
+
+  <aside class="sidebar">
+    <div class="section-title">Map Layers</div>
+
+    <div class="layer-row">
+      <label for="bathymetry-toggle">GEBCO Bathymetry</label>
+      <input type="checkbox" id="bathymetry-toggle" checked>
+    </div>
+
+    <div class="layer-row">
+      <label for="contour-toggle">500 m Contours</label>
+      <input type="checkbox" id="contour-toggle" checked>
+    </div>
+
+    <div class="layer-row">
+      <label for="label-toggle">Contour Labels</label>
+      <input type="checkbox" id="label-toggle" checked>
+    </div>
+
+    <div class="layer-row">
+      <label for="sprfmo-toggle">SPRFMO Research Areas</label>
+      <input type="checkbox" id="sprfmo-toggle" checked>
+    </div>
+    <div class="info" style="font-size:11px; margin-top:-4px;">
+      Gold: exact polygons · Dashed: schematic/partial boundary
+    </div>
+
+    <div class="slider-label">
+      <span>Contour opacity</span>
+      <span id="opacity-value">75%</span>
+    </div>
+    <input type="range" id="contour-opacity"
+           min="0" max="100" value="75">
+
+    <div class="depth-section">
+      <div class="layer-row" style="margin:0;">
+        <label for="depth-enabled"><span class="depth-swatch"></span><strong>Depth Highlighter</strong></label>
+        <input type="checkbox" id="depth-enabled" disabled aria-describedby="depth-status">
+      </div>
+      <div class="depth-inputs">
+        <div>
+          <label for="depth-min">Minimum depth (m)</label>
+          <input type="number" id="depth-min" value="500" min="0" max="7999" step="1">
+        </div>
+        <div>
+          <label for="depth-max">Maximum depth (m)</label>
+          <input type="number" id="depth-max" value="1000" min="1" max="8000" step="1">
+        </div>
+      </div>
+      <div class="depth-presets" aria-label="Quick depth ranges">
+        <button class="depth-preset" type="button" data-min="0" data-max="500">0–500</button>
+        <button class="depth-preset" type="button" data-min="500" data-max="1000">500–1000</button>
+        <button class="depth-preset" type="button" data-min="1000" data-max="2000">1000–2000</button>
+        <button class="depth-preset" type="button" data-min="2000" data-max="3000">2000–3000</button>
+        <button class="depth-preset" type="button" data-min="3000" data-max="5000">3000–5000</button>
+      </div>
+      <div class="slider-label" style="margin-top:10px;">
+        <label for="depth-opacity">Highlight opacity</label>
+        <span id="depth-opacity-value">72%</span>
+      </div>
+      <input type="range" id="depth-opacity" min="0" max="100" value="72">
+      <p class="depth-notice" id="depth-status" aria-live="polite">
+        Checking GEBCO depth tiles…
+      </p>
+      <div class="info" style="font-size:11px;">
+        Coverage: approx. 113.84–179.9°E, 45–64.44°S.<br>
+        GEBCO 2026 · Not for navigation.
+      </div>
+    </div>
+
+
+    <div class="divider"></div>
+    <div class="section-title">Research Area Navigator</div>
+    <details class="research-group" open>
+      <summary>Choose an area to locate and inspect</summary>
+      <div class="research-list" id="research-area-list" aria-live="polite">
+        <span class="tool-status">Loading research areas…</span>
+      </div>
+    </details>
+
+    <div class="divider"></div>
+    <div class="section-title">Navigation &amp; Tools</div>
+    <form id="coordinate-go-form">
+      <div class="coordinate-entry">
+        <div>
+          <label for="go-latitude">Latitude</label>
+          <input id="go-latitude" aria-label="Latitude" placeholder="55°30'S" autocomplete="off">
+        </div>
+        <div>
+          <label for="go-longitude">Longitude</label>
+          <input id="go-longitude" aria-label="Longitude" placeholder="160°E" autocomplete="off">
+        </div>
+      </div>
+      <div class="tool-row">
+        <button class="tool-button" type="submit">Go to coordinates</button>
+        <button class="tool-button" id="reset-view" type="button">Reset view</button>
+      </div>
+      <div class="tool-status" id="coordinate-status" aria-live="polite">
+        Decimal degrees or DMS accepted. Latitude first.
+      </div>
+    </form>
+    <div class="tool-row">
+      <button class="tool-button" id="measure-toggle" type="button" aria-pressed="false">Measure distance</button>
+      <button class="tool-button" id="measure-clear" type="button">Clear</button>
+    </div>
+    <div class="tool-status" id="measure-status" aria-live="polite">Click Measure, then click points on the map. Double-click to finish.</div>
+
+    <div class="divider"></div>
+    <div class="section-title">Dataset Information</div>
+    <div class="info">
+      <strong>Bathymetry:</strong> GEBCO<br>
+      <strong>Contours:</strong> 500 m interval<br>
+      <strong>Projection:</strong> Web Mercator<br>
+      <strong>Coverage:</strong> Partial Southern Ocean<br>
+      <strong>Research areas:</strong> SPRFMO (20 Aug 2026)<br>
+      <span style="font-size:11px;">Research boundaries are a plotting aid, not legal fishing limits.</span>
+    </div>
+  </aside>
 
   <div class="coordinates" id="coordinates">
-    Move cursor over map
-  </div>
-
-  <div class="attribution">
-    Bathymetry: GEBCO Compilation Group (2026)
+    LAT -- | LON --
   </div>
 
   <script src="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.js"></script>
+  <script src="https://unpkg.com/pmtiles@4/dist/pmtiles.js"></script>
 
   <script>
+    // Register PMTiles
+    const protocol = new pmtiles.Protocol();
+    maplibregl.addProtocol("pmtiles", protocol.tile);
+
     const map = new maplibregl.Map({
       container: "map",
+      center: [160, -55],
+      zoom: 3,
+      maxZoom: 14,
+      attributionControl: true,
+
       style: {
         version: 8,
+
+        // Required for text labels
+        glyphs:
+          "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
+
         sources: {
           gebco: {
             type: "raster",
             tiles: [
               "https://wms.gebco.net/mapserv?" +
-              "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap" +
-              "&LAYERS=GEBCO_LATEST&STYLES=" +
-              "&FORMAT=image/png&TRANSPARENT=false" +
+              "SERVICE=WMS&VERSION=1.1.1" +
+              "&REQUEST=GetMap" +
+              "&LAYERS=GEBCO_LATEST" +
+              "&STYLES=&FORMAT=image/png" +
+              "&TRANSPARENT=false" +
               "&SRS=EPSG:3857" +
               "&BBOX={bbox-epsg-3857}" +
               "&WIDTH=256&HEIGHT=256"
@@ -109,17 +462,16 @@
             attribution: "GEBCO Compilation Group"
           }
         },
+
         layers: [
           {
             id: "gebco-bathymetry",
             type: "raster",
-            source: "gebco"
+            source: "gebco",
+            paint: { "raster-opacity": 0.95, "raster-contrast": 0.07 }
           }
         ]
-      },
-      center: [160, -55],
-      zoom: 3,
-      maxZoom: 14
+      }
     });
 
     map.addControl(
@@ -135,17 +487,262 @@
       "bottom-right"
     );
 
-    map.on("mousemove", (event) => {
-      const lng = event.lngLat.lng;
-      const lat = event.lngLat.lat;
+    // Add contour layers
+    map.on("load", () => {
+      map.addSource("contours", {
+        type: "vector",
+        url:
+          "pmtiles://https://moyboy22.github.io/" +
+          "OKB_Seafloor_Webmap/Contour_500.pmtiles"
+      });
 
-      document.getElementById("coordinates").textContent =
-        `Latitude: ${lat.toFixed(5)}° | Longitude: ${lng.toFixed(5)}°`;
+      map.addLayer({
+        id: "contour-lines",
+        type: "line",
+        source: "contours",
+        "source-layer": "contours_500",
+        minzoom: 5,
+        maxzoom: 14,
+        paint: {
+          "line-color": "#b8edf7",
+          "line-width": [
+            "interpolate", ["linear"], ["zoom"],
+            5, 0.5,
+            8, 0.9,
+            11, 1.3
+          ],
+          "line-opacity": 0.75
+        }
+      });
+
+      map.addLayer({
+        id: "contour-labels",
+        type: "symbol",
+        source: "contours",
+        "source-layer": "contours_500",
+        minzoom: 6,
+        maxzoom: 14,
+        layout: {
+          "symbol-placement": "line",
+          "text-field": [
+            "concat",
+            ["to-string", ["get", "ELEV"]],
+            " m"
+          ],
+          "text-font": ["Noto Sans Regular"],
+          "text-size": 11,
+          "symbol-spacing": 800,
+          "text-rotation-alignment": "map",
+          "text-keep-upright": true,
+          "text-allow-overlap": false
+        },
+        paint: {
+          "text-color": "#e8faff",
+          "text-halo-color": "#102b40",
+          "text-halo-width": 1.8
+        }
+      });
+      // Small GeoJSON overlay; no tile conversion or additional hosting required.
+      map.addSource("sprfmo-research", {
+        type: "geojson",
+        data: "./SPRFMO_research_areas.geojson",
+        attribution: "SPRFMO research area measures (20 Aug 2026); schematic boundaries are not legally authoritative"
+      });
+
+      map.addLayer({
+        id: "sprfmo-fill",
+        type: "fill",
+        source: "sprfmo-research",
+        filter: ["all", ["==", ["get", "feature_role"], "geometry"],
+          ["==", ["get", "representation"], "exact_rectangle"]],
+        paint: { "fill-color": "#f3bf58", "fill-opacity": 0.13 }
+      });
+
+      map.addLayer({
+        id: "sprfmo-outline",
+        type: "line",
+        source: "sprfmo-research",
+        filter: ["all", ["==", ["get", "feature_role"], "geometry"],
+          ["==", ["get", "representation"], "exact_rectangle"]],
+        paint: { "line-color": "#ffd37c", "line-width": 2 }
+      });
+
+      map.addLayer({
+        id: "sprfmo-schematic",
+        type: "line",
+        source: "sprfmo-research",
+        filter: ["all", ["==", ["get", "feature_role"], "geometry"],
+          ["!=", ["get", "representation"], "exact_rectangle"]],
+        paint: {
+          "line-color": ["match", ["get", "representation"],
+            "schematic_outline", "#ffca70", "#70d7df"],
+          "line-width": 2.5,
+          "line-dasharray": [3, 2]
+        }
+      });
+
+      // Wider invisible hit target makes thin boundaries easier to select.
+      map.addLayer({
+        id: "sprfmo-line-hit",
+        type: "line",
+        source: "sprfmo-research",
+        filter: ["all", ["==", ["get", "feature_role"], "geometry"],
+          ["!=", ["get", "representation"], "exact_rectangle"]],
+        paint: { "line-color": "#ffffff", "line-opacity": 0, "line-width": 14 }
+      });
+
+      map.addLayer({
+        id: "sprfmo-labels",
+        type: "symbol",
+        source: "sprfmo-research",
+        filter: ["==", ["get", "feature_role"], "label"],
+        layout: {
+          "text-field": ["get", "research_area"],
+          "text-font": ["Noto Sans Regular"],
+          "text-size": 12,
+          "text-allow-overlap": false,
+          "text-offset": [0, -0.5]
+        },
+        paint: {
+          "text-color": "#ffe2a7",
+          "text-halo-color": "#091d2e",
+          "text-halo-width": 2
+        }
+      });
+
+      const researchLayerIds = [
+        "sprfmo-fill", "sprfmo-outline", "sprfmo-schematic",
+        "sprfmo-line-hit", "sprfmo-labels"
+      ];
+
+      const selectedFields = [
+        ["Member", "member"],
+        ["Research area", "research_area"],
+        ["Measure", "cmm"],
+        ["Approval period", "approval_period"],
+        ["Authorised vessels", "vessels"],
+        ["Annual TAC", "annual_tac"],
+        ["Area / stratum limit", "area_limit"],
+        ["North limit", "north_limit"],
+        ["South limit", "south_limit"],
+        ["West limit", "west_limit"],
+        ["East limit", "east_limit"],
+        ["Boundary accuracy", "boundary_accuracy"],
+        ["Notes", "notes"]
+      ];
+
+      function showResearchPopup(event) {
+        if (window.okbMeasurementActive) return;
+        const f = event.features && event.features[0];
+        if (!f) return;
+        const p = f.properties || {};
+        const popup = document.createElement("div");
+        popup.style.cssText = "color:#173044;font:13px/1.5 Segoe UI,Arial,sans-serif;max-width:310px;max-height:320px;overflow:auto;";
+        const heading = document.createElement("strong");
+        heading.textContent = p.research_area || "Research area";
+        heading.style.cssText = "display:block;font-size:16px;margin-bottom:8px;";
+        popup.appendChild(heading);
+
+        for (const [label, field] of selectedFields) {
+          if (!p[field] || field === "research_area") continue;
+          const row = document.createElement("div");
+          row.style.marginBottom = "4px";
+          const key = document.createElement("strong");
+          key.textContent = label + ": ";
+          row.appendChild(key);
+          row.appendChild(document.createTextNode(String(p[field])));
+          popup.appendChild(row);
+        }
+        if (p.source_url && /^https:\/\//i.test(p.source_url)) {
+          const a = document.createElement("a");
+          a.href = p.source_url;
+          a.target = "_blank";
+          a.rel = "noopener noreferrer";
+          a.textContent = "View source measure";
+          a.style.cssText = "display:block;margin-top:10px;color:#006f8e;";
+          popup.appendChild(a);
+        }
+        const caveat = document.createElement("small");
+        caveat.style.cssText = "display:block;margin-top:8px;color:#526675;";
+        caveat.textContent = "Mapping aid only. Confirm current SPRFMO measures and authoritative EEZ geometry before operational use.";
+        popup.appendChild(caveat);
+        new maplibregl.Popup({ closeButton: true, maxWidth: "360px" })
+          .setLngLat(event.lngLat).setDOMContent(popup).addTo(map);
+      }
+
+      window.okbOpenResearchPopup = (feature, lngLat) =>
+        showResearchPopup({ features: [feature], lngLat });
+
+      for (const layerId of ["sprfmo-fill", "sprfmo-line-hit", "sprfmo-labels"]) {
+        map.on("click", layerId, showResearchPopup);
+        map.on("mouseenter", layerId, () => { map.getCanvas().style.cursor = "pointer"; });
+        map.on("mouseleave", layerId, () => { map.getCanvas().style.cursor = ""; });
+      }
+
+      document.getElementById("sprfmo-toggle").addEventListener("change", (event) => {
+        for (const id of researchLayerIds) {
+          map.setLayoutProperty(id, "visibility", event.target.checked ? "visible" : "none");
+        }
+      });
+    });
+
+    // Layer controls
+    function toggleLayer(checkboxId, layerId) {
+      document.getElementById(checkboxId)
+        .addEventListener("change", (event) => {
+          if (!map.getLayer(layerId)) return;
+
+          map.setLayoutProperty(
+            layerId,
+            "visibility",
+            event.target.checked ? "visible" : "none"
+          );
+        });
+    }
+
+    toggleLayer("bathymetry-toggle", "gebco-bathymetry");
+    toggleLayer("contour-toggle", "contour-lines");
+    toggleLayer("label-toggle", "contour-labels");
+
+    // Contour opacity slider
+    document.getElementById("contour-opacity")
+      .addEventListener("input", (event) => {
+        const opacity = Number(event.target.value) / 100;
+
+        document.getElementById("opacity-value")
+          .textContent = event.target.value + "%";
+
+        if (map.getLayer("contour-lines")) {
+          map.setPaintProperty(
+            "contour-lines",
+            "line-opacity",
+            opacity
+          );
+        }
+      });
+
+    // Cursor coordinates
+    map.on("mousemove", (event) => {
+      const lat = event.lngLat.lat;
+      const lon = event.lngLat.lng;
+
+      const latText =
+        Math.abs(lat).toFixed(5) + "°" +
+        (lat < 0 ? "S" : "N");
+
+      const lonText =
+        Math.abs(lon).toFixed(5) + "°" +
+        (lon < 0 ? "W" : "E");
+
+      document.getElementById("coordinates")
+        .textContent = `LAT ${latText} | LON ${lonText}`;
     });
 
     map.on("error", (event) => {
-      console.error("Map error:", event.error);
+      console.error("MapLibre error:", event.error);
     });
   </script>
+  <script src="./tools.js"></script>
+  <script src="./depth.js"></script>
 </body>
 </html>
