@@ -1,18 +1,19 @@
 {
   "type": "FeatureCollection",
-  "name": "SPRFMO toothfish research areas — webmap AOI subset",
+  "name": "SPRFMO toothfish research areas — all 20 approved workbook zones",
   "metadata": {
     "source": "SPRFMO_current_toothfish_research_areas_2026(1).xlsx",
-    "approved_as_of": "2026-08-20",
-    "aoi_wgs84": [
-      130,
-      -60,
-      170,
-      -50
-    ],
-    "coordinate_system": "WGS84 longitude/latitude",
-    "legal_notice": "Plotting aid only. Schematic and partial boundaries are not legal fishing boundaries. Consult current SPRFMO CMMs and authoritative EEZ datasets before operational use.",
-    "areas": 5
+    "source_as_of": "2026-08-20",
+    "coordinate_system": "EPSG:4326",
+    "areas": 20,
+    "members": {
+      "European Union": 2,
+      "New Zealand": 9,
+      "Australia": 1,
+      "Korea": 8
+    },
+    "accuracy": "16 exact polygons, one schematic EEZ outline, three partial EEZ-boundary segments",
+    "legal_notice": "Plotting aid only: not legal fishing boundaries. EEZ-bounded areas may be incomplete or schematic. Consult current SPRFMO CMMs and official EEZ geometry."
   },
   "features": [
     {
@@ -174,6 +175,70 @@
     {
       "type": "Feature",
       "properties": {
+        "member": "Australia",
+        "cmm": "CMM 14f-2024",
+        "research_area": "MRC RB",
+        "approval_period": "2024–2026 conditional",
+        "vessels": "FV Antarctic Discovery",
+        "annual_tac": "40 t",
+        "area_limit": "40 t",
+        "geometry_description": "EEZ-bounded polygon (southern boundary shown only)",
+        "north_limit": "Macquarie Island EEZ",
+        "south_limit": "60°00′S",
+        "west_limit": "157°00′E",
+        "east_limit": "163°00′E",
+        "representation": "boundary_segment",
+        "boundary_accuracy": "Southern boundary exact; northern EEZ intersection unknown",
+        "notes": "Northern boundary follows the Macquarie Island EEZ. CMM does not state numeric EEZ intersection latitudes at 157°E or 163°E, so only the exact southern boundary is drawn.",
+        "source_url": "https://www.sprfmo.int/assets/Fisheries/Conservation-and-Management-Measures/2026-CMMs/CMM-14f-2024-Exploratory-Toothfish-AUS_CONSEQ2026.pdf",
+        "feature_role": "geometry"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            157,
+            -60
+          ],
+          [
+            163,
+            -60
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "Australia",
+        "cmm": "CMM 14f-2024",
+        "research_area": "MRC RB",
+        "approval_period": "2024–2026 conditional",
+        "vessels": "FV Antarctic Discovery",
+        "annual_tac": "40 t",
+        "area_limit": "40 t",
+        "geometry_description": "EEZ-bounded polygon (southern boundary shown only)",
+        "north_limit": "Macquarie Island EEZ",
+        "south_limit": "60°00′S",
+        "west_limit": "157°00′E",
+        "east_limit": "163°00′E",
+        "representation": "boundary_segment",
+        "boundary_accuracy": "Southern boundary exact; northern EEZ intersection unknown",
+        "notes": "Northern boundary follows the Macquarie Island EEZ. CMM does not state numeric EEZ intersection latitudes at 157°E or 163°E, so only the exact southern boundary is drawn.",
+        "source_url": "https://www.sprfmo.int/assets/Fisheries/Conservation-and-Management-Measures/2026-CMMs/CMM-14f-2024-Exploratory-Toothfish-AUS_CONSEQ2026.pdf",
+        "feature_role": "label"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          160,
+          -59.65
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
         "member": "New Zealand",
         "cmm": "CMM 14i-2025",
         "research_area": "NZSWRB1",
@@ -254,70 +319,6 @@
     {
       "type": "Feature",
       "properties": {
-        "member": "Australia",
-        "cmm": "CMM 14f-2024",
-        "research_area": "MRC RB",
-        "approval_period": "2024–2026 conditional",
-        "vessels": "FV Antarctic Discovery",
-        "annual_tac": "40 t",
-        "area_limit": "40 t",
-        "geometry_description": "EEZ-bounded polygon (southern boundary shown only)",
-        "north_limit": "Macquarie Island EEZ",
-        "south_limit": "60°00′S",
-        "west_limit": "157°00′E",
-        "east_limit": "163°00′E",
-        "representation": "boundary_segment",
-        "boundary_accuracy": "Southern boundary exact; northern EEZ intersection unknown",
-        "notes": "Northern boundary follows the Macquarie Island EEZ. CMM does not state numeric EEZ intersection latitudes at 157°E or 163°E, so only the exact southern boundary is drawn.",
-        "source_url": "https://www.sprfmo.int/assets/Fisheries/Conservation-and-Management-Measures/2026-CMMs/CMM-14f-2024-Exploratory-Toothfish-AUS_CONSEQ2026.pdf",
-        "feature_role": "geometry"
-      },
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            157,
-            -60
-          ],
-          [
-            163,
-            -60
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "member": "Australia",
-        "cmm": "CMM 14f-2024",
-        "research_area": "MRC RB",
-        "approval_period": "2024–2026 conditional",
-        "vessels": "FV Antarctic Discovery",
-        "annual_tac": "40 t",
-        "area_limit": "40 t",
-        "geometry_description": "EEZ-bounded polygon (southern boundary shown only)",
-        "north_limit": "Macquarie Island EEZ",
-        "south_limit": "60°00′S",
-        "west_limit": "157°00′E",
-        "east_limit": "163°00′E",
-        "representation": "boundary_segment",
-        "boundary_accuracy": "Southern boundary exact; northern EEZ intersection unknown",
-        "notes": "Northern boundary follows the Macquarie Island EEZ. CMM does not state numeric EEZ intersection latitudes at 157°E or 163°E, so only the exact southern boundary is drawn.",
-        "source_url": "https://www.sprfmo.int/assets/Fisheries/Conservation-and-Management-Measures/2026-CMMs/CMM-14f-2024-Exploratory-Toothfish-AUS_CONSEQ2026.pdf",
-        "feature_role": "label"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          160,
-          -59.65
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
         "member": "New Zealand",
         "cmm": "CMM 14i-2025",
         "research_area": "RB A",
@@ -376,6 +377,1162 @@
         "coordinates": [
           166.5,
           -59.65
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "New Zealand",
+        "cmm": "CMM 14i-2025",
+        "research_area": "RB B",
+        "approval_period": "2025–2027",
+        "vessels": "San Aspiring; San Aotea II; Janas",
+        "annual_tac": "290 t combined",
+        "area_limit": "max 50 t/RB",
+        "geometry_description": "EEZ-clipped sector",
+        "north_limit": "NZ EEZ / ~54°S",
+        "south_limit": "60°00′S",
+        "west_limit": "170°00′E",
+        "east_limit": "175°00′E",
+        "representation": "boundary_segment",
+        "boundary_accuracy": "Southern sector line exact; EEZ-clipped northern edges not mapped",
+        "notes": "Northern edge is clipped by the New Zealand EEZ. Longitude sector is from approved FOP Figure 3; southern boundary only is plotted, not a legal closed polygon.",
+        "source_url": "https://www.sprfmo.int/assets/Meetings/02-SC/12th-SC-2024/Deepwater/SC12-DW01_rev2-New-Zealand-Fisheries-Operation-Plan-for-Toothfish.pdf",
+        "feature_role": "geometry"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            170,
+            -60
+          ],
+          [
+            175,
+            -60
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "New Zealand",
+        "cmm": "CMM 14i-2025",
+        "research_area": "RB B",
+        "approval_period": "2025–2027",
+        "vessels": "San Aspiring; San Aotea II; Janas",
+        "annual_tac": "290 t combined",
+        "area_limit": "max 50 t/RB",
+        "geometry_description": "EEZ-clipped sector",
+        "north_limit": "NZ EEZ / ~54°S",
+        "south_limit": "60°00′S",
+        "west_limit": "170°00′E",
+        "east_limit": "175°00′E",
+        "representation": "boundary_segment",
+        "boundary_accuracy": "Southern sector line exact; EEZ-clipped northern edges not mapped",
+        "notes": "Northern edge is clipped by the New Zealand EEZ. Longitude sector is from approved FOP Figure 3; southern boundary only is plotted, not a legal closed polygon.",
+        "source_url": "https://www.sprfmo.int/assets/Meetings/02-SC/12th-SC-2024/Deepwater/SC12-DW01_rev2-New-Zealand-Fisheries-Operation-Plan-for-Toothfish.pdf",
+        "feature_role": "label"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          172.5,
+          -59.45
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "New Zealand",
+        "cmm": "CMM 14i-2025",
+        "research_area": "RB C",
+        "approval_period": "2025–2027",
+        "vessels": "San Aspiring; San Aotea II; Janas",
+        "annual_tac": "290 t combined",
+        "area_limit": "max 50 t/RB",
+        "geometry_description": "Regular grid sector",
+        "north_limit": "54°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "175°00′E",
+        "east_limit": "180°00′E",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Approved FOP grid boundaries; fixed coordinates",
+        "notes": "Sector boundaries are shown in the approved Fisheries Operation Plan Figure 3; outer limits are confirmed in CMM 14i-2025.",
+        "source_url": "https://www.sprfmo.int/assets/Meetings/02-SC/12th-SC-2024/Deepwater/SC12-DW01_rev2-New-Zealand-Fisheries-Operation-Plan-for-Toothfish.pdf",
+        "feature_role": "geometry"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              175,
+              -54
+            ],
+            [
+              175,
+              -60
+            ],
+            [
+              180,
+              -60
+            ],
+            [
+              180,
+              -54
+            ],
+            [
+              175,
+              -54
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "New Zealand",
+        "cmm": "CMM 14i-2025",
+        "research_area": "RB C",
+        "approval_period": "2025–2027",
+        "vessels": "San Aspiring; San Aotea II; Janas",
+        "annual_tac": "290 t combined",
+        "area_limit": "max 50 t/RB",
+        "geometry_description": "Regular grid sector",
+        "north_limit": "54°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "175°00′E",
+        "east_limit": "180°00′E",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Approved FOP grid boundaries; fixed coordinates",
+        "notes": "Sector boundaries are shown in the approved Fisheries Operation Plan Figure 3; outer limits are confirmed in CMM 14i-2025.",
+        "source_url": "https://www.sprfmo.int/assets/Meetings/02-SC/12th-SC-2024/Deepwater/SC12-DW01_rev2-New-Zealand-Fisheries-Operation-Plan-for-Toothfish.pdf",
+        "feature_role": "label"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          177.5,
+          -57
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "New Zealand",
+        "cmm": "CMM 14i-2025",
+        "research_area": "RB D",
+        "approval_period": "2025–2027",
+        "vessels": "San Aspiring; San Aotea II; Janas",
+        "annual_tac": "290 t combined",
+        "area_limit": "max 50 t/RB",
+        "geometry_description": "Regular grid sector",
+        "north_limit": "54°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "180°00′W",
+        "east_limit": "175°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Approved FOP grid boundaries; fixed coordinates",
+        "notes": "Sector boundaries are shown in the approved Fisheries Operation Plan Figure 3; outer limits are confirmed in CMM 14i-2025.",
+        "source_url": "https://www.sprfmo.int/assets/Meetings/02-SC/12th-SC-2024/Deepwater/SC12-DW01_rev2-New-Zealand-Fisheries-Operation-Plan-for-Toothfish.pdf",
+        "feature_role": "geometry"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -180,
+              -54
+            ],
+            [
+              -180,
+              -60
+            ],
+            [
+              -175,
+              -60
+            ],
+            [
+              -175,
+              -54
+            ],
+            [
+              -180,
+              -54
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "New Zealand",
+        "cmm": "CMM 14i-2025",
+        "research_area": "RB D",
+        "approval_period": "2025–2027",
+        "vessels": "San Aspiring; San Aotea II; Janas",
+        "annual_tac": "290 t combined",
+        "area_limit": "max 50 t/RB",
+        "geometry_description": "Regular grid sector",
+        "north_limit": "54°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "180°00′W",
+        "east_limit": "175°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Approved FOP grid boundaries; fixed coordinates",
+        "notes": "Sector boundaries are shown in the approved Fisheries Operation Plan Figure 3; outer limits are confirmed in CMM 14i-2025.",
+        "source_url": "https://www.sprfmo.int/assets/Meetings/02-SC/12th-SC-2024/Deepwater/SC12-DW01_rev2-New-Zealand-Fisheries-Operation-Plan-for-Toothfish.pdf",
+        "feature_role": "label"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -177.5,
+          -57
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "New Zealand",
+        "cmm": "CMM 14i-2025",
+        "research_area": "RB E",
+        "approval_period": "2025–2027",
+        "vessels": "San Aspiring; San Aotea II; Janas",
+        "annual_tac": "290 t combined",
+        "area_limit": "max 50 t/RB",
+        "geometry_description": "Regular grid sector",
+        "north_limit": "54°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "175°00′W",
+        "east_limit": "170°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Approved FOP grid boundaries; fixed coordinates",
+        "notes": "Sector boundaries are shown in the approved Fisheries Operation Plan Figure 3; outer limits are confirmed in CMM 14i-2025.",
+        "source_url": "https://www.sprfmo.int/assets/Meetings/02-SC/12th-SC-2024/Deepwater/SC12-DW01_rev2-New-Zealand-Fisheries-Operation-Plan-for-Toothfish.pdf",
+        "feature_role": "geometry"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -175,
+              -54
+            ],
+            [
+              -175,
+              -60
+            ],
+            [
+              -170,
+              -60
+            ],
+            [
+              -170,
+              -54
+            ],
+            [
+              -175,
+              -54
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "New Zealand",
+        "cmm": "CMM 14i-2025",
+        "research_area": "RB E",
+        "approval_period": "2025–2027",
+        "vessels": "San Aspiring; San Aotea II; Janas",
+        "annual_tac": "290 t combined",
+        "area_limit": "max 50 t/RB",
+        "geometry_description": "Regular grid sector",
+        "north_limit": "54°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "175°00′W",
+        "east_limit": "170°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Approved FOP grid boundaries; fixed coordinates",
+        "notes": "Sector boundaries are shown in the approved Fisheries Operation Plan Figure 3; outer limits are confirmed in CMM 14i-2025.",
+        "source_url": "https://www.sprfmo.int/assets/Meetings/02-SC/12th-SC-2024/Deepwater/SC12-DW01_rev2-New-Zealand-Fisheries-Operation-Plan-for-Toothfish.pdf",
+        "feature_role": "label"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -172.5,
+          -57
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "New Zealand",
+        "cmm": "CMM 14i-2025",
+        "research_area": "RB F",
+        "approval_period": "2025–2027",
+        "vessels": "San Aspiring; San Aotea II; Janas",
+        "annual_tac": "290 t combined",
+        "area_limit": "max 50 t/RB",
+        "geometry_description": "Regular grid sector",
+        "north_limit": "54°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "170°00′W",
+        "east_limit": "165°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Approved FOP grid boundaries; fixed coordinates",
+        "notes": "Sector boundaries are shown in the approved Fisheries Operation Plan Figure 3; outer limits are confirmed in CMM 14i-2025.",
+        "source_url": "https://www.sprfmo.int/assets/Meetings/02-SC/12th-SC-2024/Deepwater/SC12-DW01_rev2-New-Zealand-Fisheries-Operation-Plan-for-Toothfish.pdf",
+        "feature_role": "geometry"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -170,
+              -54
+            ],
+            [
+              -170,
+              -60
+            ],
+            [
+              -165,
+              -60
+            ],
+            [
+              -165,
+              -54
+            ],
+            [
+              -170,
+              -54
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "New Zealand",
+        "cmm": "CMM 14i-2025",
+        "research_area": "RB F",
+        "approval_period": "2025–2027",
+        "vessels": "San Aspiring; San Aotea II; Janas",
+        "annual_tac": "290 t combined",
+        "area_limit": "max 50 t/RB",
+        "geometry_description": "Regular grid sector",
+        "north_limit": "54°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "170°00′W",
+        "east_limit": "165°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Approved FOP grid boundaries; fixed coordinates",
+        "notes": "Sector boundaries are shown in the approved Fisheries Operation Plan Figure 3; outer limits are confirmed in CMM 14i-2025.",
+        "source_url": "https://www.sprfmo.int/assets/Meetings/02-SC/12th-SC-2024/Deepwater/SC12-DW01_rev2-New-Zealand-Fisheries-Operation-Plan-for-Toothfish.pdf",
+        "feature_role": "label"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -167.5,
+          -57
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "New Zealand",
+        "cmm": "CMM 14i-2025",
+        "research_area": "RB G",
+        "approval_period": "2025–2027",
+        "vessels": "San Aspiring; San Aotea II; Janas",
+        "annual_tac": "290 t combined",
+        "area_limit": "max 50 t/RB",
+        "geometry_description": "Regular grid sector",
+        "north_limit": "54°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "165°00′W",
+        "east_limit": "160°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Approved FOP grid boundaries; fixed coordinates",
+        "notes": "Sector boundaries are shown in the approved Fisheries Operation Plan Figure 3; outer limits are confirmed in CMM 14i-2025.",
+        "source_url": "https://www.sprfmo.int/assets/Meetings/02-SC/12th-SC-2024/Deepwater/SC12-DW01_rev2-New-Zealand-Fisheries-Operation-Plan-for-Toothfish.pdf",
+        "feature_role": "geometry"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -165,
+              -54
+            ],
+            [
+              -165,
+              -60
+            ],
+            [
+              -160,
+              -60
+            ],
+            [
+              -160,
+              -54
+            ],
+            [
+              -165,
+              -54
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "New Zealand",
+        "cmm": "CMM 14i-2025",
+        "research_area": "RB G",
+        "approval_period": "2025–2027",
+        "vessels": "San Aspiring; San Aotea II; Janas",
+        "annual_tac": "290 t combined",
+        "area_limit": "max 50 t/RB",
+        "geometry_description": "Regular grid sector",
+        "north_limit": "54°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "165°00′W",
+        "east_limit": "160°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Approved FOP grid boundaries; fixed coordinates",
+        "notes": "Sector boundaries are shown in the approved Fisheries Operation Plan Figure 3; outer limits are confirmed in CMM 14i-2025.",
+        "source_url": "https://www.sprfmo.int/assets/Meetings/02-SC/12th-SC-2024/Deepwater/SC12-DW01_rev2-New-Zealand-Fisheries-Operation-Plan-for-Toothfish.pdf",
+        "feature_role": "label"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -162.5,
+          -57
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "New Zealand",
+        "cmm": "CMM 14i-2025",
+        "research_area": "RB H",
+        "approval_period": "2025–2027",
+        "vessels": "San Aspiring; San Aotea II; Janas",
+        "annual_tac": "290 t combined",
+        "area_limit": "max 50 t/RB",
+        "geometry_description": "Regular grid sector",
+        "north_limit": "54°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "160°00′W",
+        "east_limit": "155°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Approved FOP grid boundaries; fixed coordinates",
+        "notes": "Sector boundaries are shown in the approved Fisheries Operation Plan Figure 3; outer limits are confirmed in CMM 14i-2025.",
+        "source_url": "https://www.sprfmo.int/assets/Meetings/02-SC/12th-SC-2024/Deepwater/SC12-DW01_rev2-New-Zealand-Fisheries-Operation-Plan-for-Toothfish.pdf",
+        "feature_role": "geometry"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -160,
+              -54
+            ],
+            [
+              -160,
+              -60
+            ],
+            [
+              -155,
+              -60
+            ],
+            [
+              -155,
+              -54
+            ],
+            [
+              -160,
+              -54
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "New Zealand",
+        "cmm": "CMM 14i-2025",
+        "research_area": "RB H",
+        "approval_period": "2025–2027",
+        "vessels": "San Aspiring; San Aotea II; Janas",
+        "annual_tac": "290 t combined",
+        "area_limit": "max 50 t/RB",
+        "geometry_description": "Regular grid sector",
+        "north_limit": "54°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "160°00′W",
+        "east_limit": "155°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Approved FOP grid boundaries; fixed coordinates",
+        "notes": "Sector boundaries are shown in the approved Fisheries Operation Plan Figure 3; outer limits are confirmed in CMM 14i-2025.",
+        "source_url": "https://www.sprfmo.int/assets/Meetings/02-SC/12th-SC-2024/Deepwater/SC12-DW01_rev2-New-Zealand-Fisheries-Operation-Plan-for-Toothfish.pdf",
+        "feature_role": "label"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -157.5,
+          -57
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "Korea",
+        "cmm": "CMM 14h-2025",
+        "research_area": "RB L",
+        "approval_period": "2025–2027",
+        "vessels": "FV Greenstar",
+        "annual_tac": "240 t combined",
+        "area_limit": "max 40 t/stratum",
+        "geometry_description": "Exact rectangle",
+        "north_limit": "56°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "155°00′W",
+        "east_limit": "150°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Exact corners listed in SPRFMO CMM 14h-2025 Table 1",
+        "notes": "Four corner positions are expressly listed in Table 1 of CMM 14h-2025.",
+        "source_url": "https://sprfmo.int/assets/Fisheries/Conservation-and-Management-Measures/2025-CMMs/CMM-14h-2025-KOR-Exploratory-Toothfish-Fishery.pdf",
+        "feature_role": "geometry"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -155,
+              -56
+            ],
+            [
+              -155,
+              -60
+            ],
+            [
+              -150,
+              -60
+            ],
+            [
+              -150,
+              -56
+            ],
+            [
+              -155,
+              -56
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "Korea",
+        "cmm": "CMM 14h-2025",
+        "research_area": "RB L",
+        "approval_period": "2025–2027",
+        "vessels": "FV Greenstar",
+        "annual_tac": "240 t combined",
+        "area_limit": "max 40 t/stratum",
+        "geometry_description": "Exact rectangle",
+        "north_limit": "56°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "155°00′W",
+        "east_limit": "150°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Exact corners listed in SPRFMO CMM 14h-2025 Table 1",
+        "notes": "Four corner positions are expressly listed in Table 1 of CMM 14h-2025.",
+        "source_url": "https://sprfmo.int/assets/Fisheries/Conservation-and-Management-Measures/2025-CMMs/CMM-14h-2025-KOR-Exploratory-Toothfish-Fishery.pdf",
+        "feature_role": "label"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -152.5,
+          -58
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "Korea",
+        "cmm": "CMM 14h-2025",
+        "research_area": "RB M",
+        "approval_period": "2025–2027",
+        "vessels": "FV Greenstar",
+        "annual_tac": "240 t combined",
+        "area_limit": "max 40 t/stratum",
+        "geometry_description": "Exact rectangle",
+        "north_limit": "56°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "150°00′W",
+        "east_limit": "145°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Exact corners listed in SPRFMO CMM 14h-2025 Table 1",
+        "notes": "Four corner positions are expressly listed in Table 1 of CMM 14h-2025.",
+        "source_url": "https://sprfmo.int/assets/Fisheries/Conservation-and-Management-Measures/2025-CMMs/CMM-14h-2025-KOR-Exploratory-Toothfish-Fishery.pdf",
+        "feature_role": "geometry"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -150,
+              -56
+            ],
+            [
+              -150,
+              -60
+            ],
+            [
+              -145,
+              -60
+            ],
+            [
+              -145,
+              -56
+            ],
+            [
+              -150,
+              -56
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "Korea",
+        "cmm": "CMM 14h-2025",
+        "research_area": "RB M",
+        "approval_period": "2025–2027",
+        "vessels": "FV Greenstar",
+        "annual_tac": "240 t combined",
+        "area_limit": "max 40 t/stratum",
+        "geometry_description": "Exact rectangle",
+        "north_limit": "56°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "150°00′W",
+        "east_limit": "145°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Exact corners listed in SPRFMO CMM 14h-2025 Table 1",
+        "notes": "Four corner positions are expressly listed in Table 1 of CMM 14h-2025.",
+        "source_url": "https://sprfmo.int/assets/Fisheries/Conservation-and-Management-Measures/2025-CMMs/CMM-14h-2025-KOR-Exploratory-Toothfish-Fishery.pdf",
+        "feature_role": "label"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -147.5,
+          -58
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "Korea",
+        "cmm": "CMM 14h-2025",
+        "research_area": "RB N",
+        "approval_period": "2025–2027",
+        "vessels": "FV Greenstar",
+        "annual_tac": "240 t combined",
+        "area_limit": "max 40 t/stratum",
+        "geometry_description": "Exact rectangle",
+        "north_limit": "52°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "145°00′W",
+        "east_limit": "140°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Exact corners listed in SPRFMO CMM 14h-2025 Table 1",
+        "notes": "Four corner positions are expressly listed in Table 1 of CMM 14h-2025.",
+        "source_url": "https://sprfmo.int/assets/Fisheries/Conservation-and-Management-Measures/2025-CMMs/CMM-14h-2025-KOR-Exploratory-Toothfish-Fishery.pdf",
+        "feature_role": "geometry"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -145,
+              -52
+            ],
+            [
+              -145,
+              -60
+            ],
+            [
+              -140,
+              -60
+            ],
+            [
+              -140,
+              -52
+            ],
+            [
+              -145,
+              -52
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "Korea",
+        "cmm": "CMM 14h-2025",
+        "research_area": "RB N",
+        "approval_period": "2025–2027",
+        "vessels": "FV Greenstar",
+        "annual_tac": "240 t combined",
+        "area_limit": "max 40 t/stratum",
+        "geometry_description": "Exact rectangle",
+        "north_limit": "52°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "145°00′W",
+        "east_limit": "140°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Exact corners listed in SPRFMO CMM 14h-2025 Table 1",
+        "notes": "Four corner positions are expressly listed in Table 1 of CMM 14h-2025.",
+        "source_url": "https://sprfmo.int/assets/Fisheries/Conservation-and-Management-Measures/2025-CMMs/CMM-14h-2025-KOR-Exploratory-Toothfish-Fishery.pdf",
+        "feature_role": "label"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -142.5,
+          -56
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "Korea",
+        "cmm": "CMM 14h-2025",
+        "research_area": "RB O",
+        "approval_period": "2025–2027",
+        "vessels": "FV Greenstar",
+        "annual_tac": "240 t combined",
+        "area_limit": "max 40 t/stratum",
+        "geometry_description": "Exact rectangle",
+        "north_limit": "52°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "140°00′W",
+        "east_limit": "135°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Exact corners listed in SPRFMO CMM 14h-2025 Table 1",
+        "notes": "Four corner positions are expressly listed in Table 1 of CMM 14h-2025.",
+        "source_url": "https://sprfmo.int/assets/Fisheries/Conservation-and-Management-Measures/2025-CMMs/CMM-14h-2025-KOR-Exploratory-Toothfish-Fishery.pdf",
+        "feature_role": "geometry"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -140,
+              -52
+            ],
+            [
+              -140,
+              -60
+            ],
+            [
+              -135,
+              -60
+            ],
+            [
+              -135,
+              -52
+            ],
+            [
+              -140,
+              -52
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "Korea",
+        "cmm": "CMM 14h-2025",
+        "research_area": "RB O",
+        "approval_period": "2025–2027",
+        "vessels": "FV Greenstar",
+        "annual_tac": "240 t combined",
+        "area_limit": "max 40 t/stratum",
+        "geometry_description": "Exact rectangle",
+        "north_limit": "52°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "140°00′W",
+        "east_limit": "135°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Exact corners listed in SPRFMO CMM 14h-2025 Table 1",
+        "notes": "Four corner positions are expressly listed in Table 1 of CMM 14h-2025.",
+        "source_url": "https://sprfmo.int/assets/Fisheries/Conservation-and-Management-Measures/2025-CMMs/CMM-14h-2025-KOR-Exploratory-Toothfish-Fishery.pdf",
+        "feature_role": "label"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -137.5,
+          -56
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "Korea",
+        "cmm": "CMM 14h-2025",
+        "research_area": "RB P",
+        "approval_period": "2025–2027",
+        "vessels": "FV Greenstar",
+        "annual_tac": "240 t combined",
+        "area_limit": "max 40 t/stratum",
+        "geometry_description": "Exact rectangle",
+        "north_limit": "52°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "135°00′W",
+        "east_limit": "130°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Exact corners listed in SPRFMO CMM 14h-2025 Table 1",
+        "notes": "Four corner positions are expressly listed in Table 1 of CMM 14h-2025.",
+        "source_url": "https://sprfmo.int/assets/Fisheries/Conservation-and-Management-Measures/2025-CMMs/CMM-14h-2025-KOR-Exploratory-Toothfish-Fishery.pdf",
+        "feature_role": "geometry"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -135,
+              -52
+            ],
+            [
+              -135,
+              -60
+            ],
+            [
+              -130,
+              -60
+            ],
+            [
+              -130,
+              -52
+            ],
+            [
+              -135,
+              -52
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "Korea",
+        "cmm": "CMM 14h-2025",
+        "research_area": "RB P",
+        "approval_period": "2025–2027",
+        "vessels": "FV Greenstar",
+        "annual_tac": "240 t combined",
+        "area_limit": "max 40 t/stratum",
+        "geometry_description": "Exact rectangle",
+        "north_limit": "52°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "135°00′W",
+        "east_limit": "130°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Exact corners listed in SPRFMO CMM 14h-2025 Table 1",
+        "notes": "Four corner positions are expressly listed in Table 1 of CMM 14h-2025.",
+        "source_url": "https://sprfmo.int/assets/Fisheries/Conservation-and-Management-Measures/2025-CMMs/CMM-14h-2025-KOR-Exploratory-Toothfish-Fishery.pdf",
+        "feature_role": "label"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -132.5,
+          -56
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "Korea",
+        "cmm": "CMM 14h-2025",
+        "research_area": "RB Q",
+        "approval_period": "2025–2027",
+        "vessels": "FV Greenstar",
+        "annual_tac": "240 t combined",
+        "area_limit": "max 40 t/stratum",
+        "geometry_description": "Exact rectangle",
+        "north_limit": "52°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "130°00′W",
+        "east_limit": "125°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Exact corners listed in SPRFMO CMM 14h-2025 Table 1",
+        "notes": "Four corner positions are expressly listed in Table 1 of CMM 14h-2025.",
+        "source_url": "https://sprfmo.int/assets/Fisheries/Conservation-and-Management-Measures/2025-CMMs/CMM-14h-2025-KOR-Exploratory-Toothfish-Fishery.pdf",
+        "feature_role": "geometry"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -130,
+              -52
+            ],
+            [
+              -130,
+              -60
+            ],
+            [
+              -125,
+              -60
+            ],
+            [
+              -125,
+              -52
+            ],
+            [
+              -130,
+              -52
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "Korea",
+        "cmm": "CMM 14h-2025",
+        "research_area": "RB Q",
+        "approval_period": "2025–2027",
+        "vessels": "FV Greenstar",
+        "annual_tac": "240 t combined",
+        "area_limit": "max 40 t/stratum",
+        "geometry_description": "Exact rectangle",
+        "north_limit": "52°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "130°00′W",
+        "east_limit": "125°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Exact corners listed in SPRFMO CMM 14h-2025 Table 1",
+        "notes": "Four corner positions are expressly listed in Table 1 of CMM 14h-2025.",
+        "source_url": "https://sprfmo.int/assets/Fisheries/Conservation-and-Management-Measures/2025-CMMs/CMM-14h-2025-KOR-Exploratory-Toothfish-Fishery.pdf",
+        "feature_role": "label"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -127.5,
+          -56
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "Korea",
+        "cmm": "CMM 14h-2025",
+        "research_area": "RB R",
+        "approval_period": "2025–2027",
+        "vessels": "FV Greenstar",
+        "annual_tac": "240 t combined",
+        "area_limit": "max 40 t/stratum",
+        "geometry_description": "Exact rectangle",
+        "north_limit": "52°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "125°00′W",
+        "east_limit": "120°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Exact corners listed in SPRFMO CMM 14h-2025 Table 1",
+        "notes": "Four corner positions are expressly listed in Table 1 of CMM 14h-2025.",
+        "source_url": "https://sprfmo.int/assets/Fisheries/Conservation-and-Management-Measures/2025-CMMs/CMM-14h-2025-KOR-Exploratory-Toothfish-Fishery.pdf",
+        "feature_role": "geometry"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -125,
+              -52
+            ],
+            [
+              -125,
+              -60
+            ],
+            [
+              -120,
+              -60
+            ],
+            [
+              -120,
+              -52
+            ],
+            [
+              -125,
+              -52
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "Korea",
+        "cmm": "CMM 14h-2025",
+        "research_area": "RB R",
+        "approval_period": "2025–2027",
+        "vessels": "FV Greenstar",
+        "annual_tac": "240 t combined",
+        "area_limit": "max 40 t/stratum",
+        "geometry_description": "Exact rectangle",
+        "north_limit": "52°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "125°00′W",
+        "east_limit": "120°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Exact corners listed in SPRFMO CMM 14h-2025 Table 1",
+        "notes": "Four corner positions are expressly listed in Table 1 of CMM 14h-2025.",
+        "source_url": "https://sprfmo.int/assets/Fisheries/Conservation-and-Management-Measures/2025-CMMs/CMM-14h-2025-KOR-Exploratory-Toothfish-Fishery.pdf",
+        "feature_role": "label"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.5,
+          -56
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "Korea",
+        "cmm": "CMM 14h-2025",
+        "research_area": "RB S",
+        "approval_period": "2025–2027",
+        "vessels": "FV Greenstar",
+        "annual_tac": "240 t combined",
+        "area_limit": "max 40 t/stratum",
+        "geometry_description": "Exact rectangle",
+        "north_limit": "52°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "120°00′W",
+        "east_limit": "115°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Exact corners listed in SPRFMO CMM 14h-2025 Table 1",
+        "notes": "Four corner positions are expressly listed in Table 1 of CMM 14h-2025.",
+        "source_url": "https://sprfmo.int/assets/Fisheries/Conservation-and-Management-Measures/2025-CMMs/CMM-14h-2025-KOR-Exploratory-Toothfish-Fishery.pdf",
+        "feature_role": "geometry"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -120,
+              -52
+            ],
+            [
+              -120,
+              -60
+            ],
+            [
+              -115,
+              -60
+            ],
+            [
+              -115,
+              -52
+            ],
+            [
+              -120,
+              -52
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "member": "Korea",
+        "cmm": "CMM 14h-2025",
+        "research_area": "RB S",
+        "approval_period": "2025–2027",
+        "vessels": "FV Greenstar",
+        "annual_tac": "240 t combined",
+        "area_limit": "max 40 t/stratum",
+        "geometry_description": "Exact rectangle",
+        "north_limit": "52°00′S",
+        "south_limit": "60°00′S",
+        "west_limit": "120°00′W",
+        "east_limit": "115°00′W",
+        "representation": "exact_rectangle",
+        "boundary_accuracy": "Exact corners listed in SPRFMO CMM 14h-2025 Table 1",
+        "notes": "Four corner positions are expressly listed in Table 1 of CMM 14h-2025.",
+        "source_url": "https://sprfmo.int/assets/Fisheries/Conservation-and-Management-Measures/2025-CMMs/CMM-14h-2025-KOR-Exploratory-Toothfish-Fishery.pdf",
+        "feature_role": "label"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.5,
+          -56
         ]
       }
     }

@@ -264,7 +264,21 @@
     }
 
     .research-group summary { cursor:pointer; color:#dff5f8; font-size:12px; padding:8px 0; }
-    .research-list { margin-top:7px; display:grid; gap:6px; }
+    .research-list { margin-top:10px; display:grid; gap:8px; }
+    .research-search {
+      width:100%; min-width:0; padding:9px 10px; border-radius:6px;
+      border:1px solid #426778; color:#edf8fa; background:#0a2538;
+      font:12px "Segoe UI",Arial,sans-serif;
+    }
+    .research-count { margin:7px 0 3px; font-size:11px; color:#a7c6d2; }
+    .research-country { border:1px solid #2a4e65; border-radius:6px; overflow:hidden; }
+    .research-country > summary {
+      cursor:pointer; padding:10px; font-size:12px;
+      font-weight:650; color:#b9dce9; background:#133146;
+    }
+    .research-country > summary:hover { background:#1c4056; }
+    .research-country-items { display:grid; gap:6px; padding:7px; }
+    .research-item[hidden], .research-country[hidden] { display:none; }
     .research-item {
       width:100%; padding:9px 10px; border:1px solid var(--border);
       background:#132f45; color:#fff; text-align:left; border-radius:6px;
@@ -558,8 +572,12 @@
       <summary>Research Area Navigator</summary>
       <div class="panel-body">
         <p class="info" style="margin:3px 0 10px;">
-          Choose a research block to locate it and view its details.
+          All 20 SPRFMO toothfish research areas. Select a zone to zoom and view its details.
         </p>
+        <input type="search" id="research-search" class="research-search"
+               placeholder="Search zones, members or vessels"
+               aria-label="Search research areas" autocomplete="off">
+        <div id="research-count" class="research-count" aria-live="polite">Loading areas…</div>
         <div class="research-list" id="research-area-list" aria-live="polite">
           <span class="tool-status">Loading research areas…</span>
         </div>
@@ -942,7 +960,7 @@
       console.error("MapLibre error:", event.error);
     });
   </script>
-  <script src="./tools.js"></script>
+  <script src="./tools.js?v=all20-20261111"></script>
   <script src="./depth.js?v=1000-2000-20261110"></script>
   <script src="./basemap.js?v=chart-default-20261110"></script>
 </body>

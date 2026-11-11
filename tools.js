@@ -163,32 +163,85 @@
   const buildResearchList = data => {
     const geometry = (data.features || []).filter(f =>
       f.properties && f.properties.feature_role === "geometry");
+    areaByName.clear();
+    labelByName.clear();
     for (const f of geometry) areaByName.set(f.properties.research_area, f);
     for (const f of (data.features || [])) {
       if (f.properties && f.properties.feature_role === "label")
         labelByName.set(f.properties.research_area, f);
     }
+
     areaList.replaceChildren();
+    const groups = new Map();
+    for (const country of ["New Zealand", "Korea", "European Union", "Australia"])
+      groups.set(country, []);
     for (const feature of geometry) {
-      const p = feature.properties;
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "research-item";
-      button.dataset.area = p.research_area;
-      button.setAttribute("aria-pressed", "false");
-      const title = document.createElement("strong");
-      title.textContent = p.research_area;
-      const detail = document.createElement("small");
-      detail.textContent = p.member + " · " +
-        (p.representation === "exact_rectangle" ? "Exact polygon" : "Schematic/partial");
-      button.append(title, detail);
-      button.addEventListener("click", () => {
-        if (!document.getElementById("sprfmo-toggle").checked)
-          document.getElementById("sprfmo-toggle").click();
-        selectResearchArea(p.research_area, true);
-      });
-      areaList.appendChild(button);
+      const country = feature.properties.member || "Other";
+      if (!groups.has(country)) groups.set(country, []);
+      groups.get(country).push(feature);
     }
+    const searchField = document.getElementById("research-search");
+    const counter = document.getElementById("research-count");
+    const sections = [];
+
+    for (const [country, items] of groups) {
+      if (!items.length) continue;
+      const section = document.createElement("details");
+      section.className = "research-country";
+      section.open = country === "New Zealand";
+      const summary = document.createElement("summary");
+      summary.textContent = country + " · " + items.length;
+      section.appendChild(summary);
+
+      const itemsList = document.createElement("div");
+      itemsList.className = "research-country-items";
+      for (const feature of items) {
+        const p = feature.properties;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "research-item";
+        button.dataset.area = p.research_area;
+        button.dataset.search = [p.research_area, p.member, p.cmm,
+          p.vessels, p.geometry_description].filter(Boolean).join(" ").toLowerCase();
+        button.setAttribute("aria-pressed", "false");
+        const title = document.createElement("strong");
+        title.textContent = p.research_area;
+        const detail = document.createElement("small");
+        detail.textContent = p.member + " · " +
+          (p.representation === "exact_rectangle" ?
+            "Exact polygon" : "Schematic / partial EEZ boundary");
+        button.append(title, detail);
+        button.addEventListener("click", () => {
+          if (!document.getElementById("sprfmo-toggle").checked)
+            document.getElementById("sprfmo-toggle").click();
+          selectResearchArea(p.research_area, true);
+        });
+        itemsList.appendChild(button);
+      }
+      section.appendChild(itemsList);
+      areaList.appendChild(section);
+      sections.push({ section, buttons: [...itemsList.querySelectorAll(".research-item")] });
+    }
+
+    const updateSearch = () => {
+      const term = (searchField?.value || "").trim().toLowerCase();
+      let visible = 0;
+      for (const { section, buttons } of sections) {
+        let matches = 0;
+        for (const button of buttons) {
+          const show = !term || button.dataset.search.includes(term);
+          button.hidden = !show;
+          if (show) matches++;
+        }
+        section.hidden = matches === 0;
+        if (term && matches) section.open = true;
+        visible += matches;
+      }
+      if (counter) counter.textContent = visible + " of " +
+        geometry.length + " research areas";
+    };
+    searchField?.addEventListener("input", updateSearch);
+    updateSearch();
     if (!geometry.length) areaList.textContent = "No research areas available.";
   };
 
