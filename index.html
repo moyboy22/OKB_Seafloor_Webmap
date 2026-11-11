@@ -446,6 +446,38 @@
       }
       .maplibregl-ctrl-bottom-right { bottom: 62px; }
     }
+
+    /* Sidebar collapse toggle: stays outside the panel and remains visible. */
+    .sidebar-toggle {
+      position: absolute;
+      z-index: 5;
+      top: 90px;
+      left: 310px;
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 1px solid rgba(111, 179, 194, .45);
+      border-radius: 11px;
+      background: rgba(9, 29, 46, .94);
+      color: #d3eef4;
+      box-shadow: 0 6px 18px rgba(3, 15, 26, .25);
+      backdrop-filter: blur(9px);
+      cursor: pointer;
+      transition: left 180ms ease, background 150ms ease;
+    }
+    .sidebar-toggle:hover, .sidebar-toggle:focus-visible {
+      color: #fff;
+      border-color: var(--accent);
+      background: #173b50;
+    }
+    body.sidebar-collapsed .sidebar { display: none; }
+    body.sidebar-collapsed .sidebar-toggle { left: 16px; }
+    @media (max-width: 600px) {
+      .sidebar-toggle { top: 84px; left: 250px; }
+      body.sidebar-collapsed .sidebar-toggle { left: 10px; }
+    }
   </style>
 </head>
 
@@ -495,7 +527,18 @@
     </div>
   </div>
 
-  <aside class="sidebar" aria-label="Map controls">
+
+  <button type="button" id="sidebar-toggle" class="sidebar-toggle"
+    aria-label="Collapse map controls" aria-controls="map-sidebar"
+    aria-expanded="true" title="Collapse map controls">
+    <svg width="23" height="23" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round"
+      aria-hidden="true">
+      <path d="M4 6h16M4 12h16M4 18h16"></path>
+    </svg>
+  </button>
+
+  <aside id="map-sidebar" class="sidebar" aria-label="Map controls">
     <details class="panel-group" open>
       <summary>Map Layers</summary>
       <div class="panel-body">
@@ -633,6 +676,24 @@
       </div>
     </details>
   </aside>
+
+  <script>
+    // Collapse only the sidebar; preserve all settings and open panels.
+    (() => {
+      const toggle = document.getElementById("sidebar-toggle");
+      const sidebar = document.getElementById("map-sidebar");
+      toggle.addEventListener("click", () => {
+        const collapsed = document.body.classList.toggle("sidebar-collapsed");
+        toggle.setAttribute("aria-expanded", String(!collapsed));
+        const label = collapsed ? "Expand map controls" : "Collapse map controls";
+        toggle.setAttribute("aria-label", label);
+        toggle.title = label;
+        sidebar.setAttribute("aria-hidden", String(collapsed));
+        if ("inert" in sidebar) sidebar.inert = collapsed;
+      });
+    })();
+  </script>
+
 
   <div class="coordinates" id="coordinates">
     LAT -- | LON --
