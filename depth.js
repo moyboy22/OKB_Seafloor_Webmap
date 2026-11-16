@@ -16,6 +16,13 @@
   ];
   const sourceId = "okb-gebco-depth-dem";
   const layerId = "okb-depth-highlight";
+  const globalSourceId = "okb-global-depth-dem";
+  const globalLayerId = "okb-global-depth-highlight";
+  const globalArchive = window.OKB_GLOBAL_DEPTH_URL ||
+    "./GEBCO_2026_Global_TerrainRGB_Z5.pmtiles";
+  const regionalBounds = {west:113.84,east:179.9,south:-64.44,north:-45};
+  const regionalDetailZoom = 6;
+  let regionalReady = false, globalReady = false, globalTileErrors = 0;
   const enabled = document.getElementById("depth-enabled");
   const minInput = document.getElementById("depth-min");
   const maxInput = document.getElementById("depth-max");
@@ -24,7 +31,6 @@
   const opacityLabel = document.getElementById("depth-opacity-value");
   const status = document.getElementById("depth-status");
 
-  let sourceReady = false;
   const transparent = "rgba(0,0,0,0)";
   const defaultColor = "#ff3030";
   const colorStorageKey = "okb-depth-highlight-color";
@@ -78,27 +84,51 @@
     ];
   }
 
+  function isInRegion() {
+    const p = map.getCenter();
+    const lon = ((p.lng + 180) % 360 + 360) % 360 - 180;
+    return lon >= regionalBounds.west && lon <= regionalBounds.east &&
+      p.lat >= regionalBounds.south && p.lat <= regionalBounds.north;
+  }
+
+  function activeTier() {
+    if (regionalReady && (!globalReady ||
+      (map.getZoom() >= regionalDetailZoom && isInRegion()))) return "regional";
+    return globalReady ? "global" : regionalReady ? "regional" : null;
+  }
+
   function updateDepthStyle() {
     const range = readRange();
     if (!range) {
       setMessage("Enter a valid depth range: 0–8000 m, minimum less than maximum.", "error");
       return;
     }
-    const [shallow, deep] = range;
-    if (!sourceReady) return;
+    const tier = activeTier();
+    if (!tier) {
+      enabled.disabled = true;
+      setMessage("Depth tiles unavailable. Basemap and other layers still work.");
+      return;
+    }
+    enabled.disabled = false;
     try {
-      map.setPaintProperty(layerId, "color-relief-color", colorForDepths(shallow, deep));
-      map.setPaintProperty(layerId, "color-relief-opacity", Number(opacityInput.value) / 100);
-      const checked = enabled.checked;
-      map.setLayoutProperty(layerId, "visibility", checked ? "visible" : "none");
-      setMessage(
-        checked ? "Highlighting " + shallow.toLocaleString() + "–" +
-          deep.toLocaleString() + " m below sea level · GEBCO 2026." :
-          "Depth tiles ready. Turn on Depth Highlighter to show selected depths.",
-        "success"
-      );
-    } catch (e) {
-      console.error("Depth highlighter update:", e);
+      const ramp = colorForDepths(range[0], range[1]);
+      const opacity = Number(opacityInput.value) / 100;
+      for (const [id, name] of [[layerId, "regional"], [globalLayerId, "global"]]) {
+        if (!map.getLayer(id)) continue;
+        map.setPaintProperty(id, "color-relief-color", ramp);
+        map.setPaintProperty(id, "color-relief-opacity", opacity);
+        map.setLayoutProperty(id, "visibility",
+          enabled.checked && tier === name ? "visible" : "none");
+      }
+      const detail = tier === "regional" ? "regional detail" : "global overview (coarse)";
+      const note = !globalReady ? " Global elevation archive not yet deployed." : "";
+      setMessage(enabled.checked
+        ? "Highlighting " + range[0].toLocaleString() + "–" +
+          range[1].toLocaleString() + " m · " + detail + " · GEBCO 2026." + note
+        : "Depth tiles ready (" + detail + "). Turn on to highlight." + note,
+        "success");
+    } catch (error) {
+      console.error("Depth highlighter update:", error);
       setMessage("Depth rendering error. Check the browser console.", "error");
     }
   }
@@ -128,72 +158,95 @@
     }
   }
 
-  async function initDepthHighlighter() {
-    // The 76 MB archive is uploaded separately; don't break the working map.
-    setMessage("Checking whether the GEBCO depth tiles are deployed…");
-    try {
-      let selected = null;
-      for (const candidate of filenames) {
-        const url = new URL("./" + candidate, window.location.href).href;
-        try {
-          const response = await fetch(url, { method: "HEAD", cache: "no-store" });
-          if (response.ok) { selected = { url, candidate }; break; }
-        } catch (networkError) {
-          console.debug("Depth tile archive check:", candidate, networkError);
-        }
+  function addTier(source, layer, url) {
+    if (!map.getSource(source)) map.addSource(source, {
+      type: "raster-dem", url: "pmtiles://" + url,
+      encoding: "custom", redFactor: 65536,
+      greenFactor: 256, blueFactor: 1, baseShift: 32768,
+      tileSize: 256,
+      attribution: "GEBCO Compilation Group (2026). Not for navigation."
+    });
+    if (!map.getLayer(layer)) map.addLayer({
+      id: layer, type: "color-relief", source,
+      layout: {visibility: "none"},
+      paint: {
+        "color-relief-color": colorForDepths(1000, 2000),
+        "color-relief-opacity": Number(opacityInput.value) / 100
       }
-      if (!selected) throw new Error("No matching PMTiles archive in site root");
-      if (!map.getSource(sourceId)) {
-        map.addSource(sourceId, {
-          type: "raster-dem",
-          url: "pmtiles://" + selected.url,
-          encoding: "custom",
-          // RGB PNG is a signed Int16 elevation with a +32768 offset.
-          // Positive redFactor is essential for MapLibre color-relief's
-          // elevation stop packing, even though encoded R is always zero.
-          redFactor: 65536,
-          greenFactor: 256,
-          blueFactor: 1,
-          baseShift: 32768,
-          tileSize: 256,
-          // PMTiles TileJSON controls minzoom/maxzoom (7 or 8).
-          attribution: "GEBCO Compilation Group (2026). Not for navigation."
-        });
-      }
-      if (!map.getLayer(layerId)) {
-        map.addLayer({
-          id: layerId,
-          type: "color-relief",
-          source: sourceId,
-          layout: { visibility: "none" },
-          paint: {
-            "color-relief-color": colorForDepths(1000, 2000),
-            "color-relief-opacity": Number(opacityInput.value) / 100
-          }
-        }, map.getLayer("contour-lines") ? "contour-lines" : undefined);
-      }
-      sourceReady = true;
-      // Share the validated DEM source with optional basemap styling.
-      // Consumers that load later can also discover it with map.getSource().
-      window.dispatchEvent(new CustomEvent("okb-depth-source-ready", {
-        detail: { sourceId, archive: selected.candidate }
-      }));
-      enabled.disabled = false;
-      enabled.checked = true;
-      updateDepthStyle();
-      console.info("OKB depth highlighter activated with", selected.candidate,
-        "· RGB decode: R*65536 + G*256 + B - 32768");
-    } catch (e) {
-      sourceReady = false;
-      enabled.disabled = true;
-      enabled.checked = false;
-      setMessage("Depth tiles not available yet. Upload either " +
-        "GEBCO_2026_TerrainRGB_Z7.pmtiles (24 MB) or " +
-        "GEBCO_2026_TerrainRGB_Z8.pmtiles (76 MB) to the " +
-        "GitHub repository root, then refresh.", "info");
-      console.info("Depth highlighter pending data:", e);
-    }
+    }, map.getLayer("contour-lines") ? "contour-lines" : undefined);
   }
+
+  async function findRegional() {
+    for (const candidate of filenames) {
+      const url = new URL("./" + candidate, window.location.href).href;
+      try {
+        const response = await fetch(url, {method:"HEAD",cache:"no-store"});
+        if (response.ok) return {url,candidate};
+      } catch (error) {
+        console.debug("Regional archive check:", candidate, error);
+      }
+    }
+    return null;
+  }
+
+  async function findGlobal() {
+    const url = new URL(globalArchive, window.location.href);
+    if (!["https:", "http:"].includes(url.protocol)) throw Error("Invalid archive URL");
+    // Validate byte-range support and PMTiles magic bytes before enabling.
+    const response = await fetch(url.href, {
+      headers: {Range:"bytes=0-15"}, cache:"no-store"
+    });
+    if (response.status !== 206) {
+      if (response.body) await response.body.cancel();
+      throw Error("Global archive requires HTTP 206 byte-range responses.");
+    }
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    if (String.fromCharCode(...bytes.slice(0,7)) !== "PMTiles")
+      throw Error("Invalid PMTiles file signature.");
+    return url.href;
+  }
+
+  async function initDepthHighlighter() {
+    setMessage("Checking available GEBCO depth tiles…");
+    // Regional is checked first; global failures never break current tiles.
+    try {
+      const selected = await findRegional();
+      if (selected) {
+        addTier(sourceId, layerId, selected.url);
+        regionalReady = true;
+        window.dispatchEvent(new CustomEvent("okb-depth-source-ready", {
+          detail: {sourceId, archive: selected.candidate}
+        }));
+        enabled.disabled = false;
+        enabled.checked = true;
+        updateDepthStyle();
+      }
+    } catch (error) {
+      console.warn("Regional depth archive unavailable:", error);
+    }
+    try {
+      const url = await findGlobal();
+      addTier(globalSourceId, globalLayerId, url);
+      globalReady = true;
+      if (!regionalReady) enabled.checked = true;
+      console.info("OKB global depth archive enabled:", url);
+    } catch (error) {
+      console.info("Global depth archive unavailable:", error.message);
+    }
+    updateDepthStyle();
+  }
+
+  // Choose exactly one relief source, avoiding double highlights and
+  // transparency seams between different DEM resolutions.
+  map.on("moveend", updateDepthStyle);
+  map.on("error", event => {
+    const id = event.sourceId || event.source?.id;
+    if (id !== globalSourceId || !globalReady) return;
+    if (++globalTileErrors < 3) return;
+    globalReady = false;
+    console.warn("Global DEM failed; reverting to regional-only mode.", event.error);
+    updateDepthStyle();
+  });
 
   bindControls();
   if (map.loaded()) initDepthHighlighter();
