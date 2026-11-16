@@ -20,12 +20,27 @@
   const minInput = document.getElementById("depth-min");
   const maxInput = document.getElementById("depth-max");
   const opacityInput = document.getElementById("depth-opacity");
+  const colorInput = document.getElementById("depth-color");
   const opacityLabel = document.getElementById("depth-opacity-value");
   const status = document.getElementById("depth-status");
 
   let sourceReady = false;
   const transparent = "rgba(0,0,0,0)";
-  const highlight = "rgba(255,48,48,1)";
+  const defaultColor = "#ff3030";
+  const colorStorageKey = "okb-depth-highlight-color";
+  function validColor(value) {
+    return typeof value === "string" && /^#[0-9a-fA-F]{6}$/.test(value);
+  }
+  try {
+    const stored = localStorage.getItem(colorStorageKey);
+    colorInput.value = validColor(stored) ? stored : defaultColor;
+  } catch (error) {
+    colorInput.value = defaultColor;
+  }
+
+  function currentHighlight() {
+    return colorInput.value;
+  }
 
   function setMessage(message, type = "info") {
     status.textContent = message;
@@ -56,8 +71,8 @@
       "interpolate", ["linear"], ["elevation"],
       -32768, transparent,
       deepElevation - edge, transparent,
-      deepElevation, highlight,
-      shallowElevation, highlight,
+      deepElevation, currentHighlight(),
+      shallowElevation, currentHighlight(),
       shallowElevation + edge, transparent,
       32767, transparent
     ];
@@ -90,6 +105,14 @@
 
   function bindControls() {
     enabled.addEventListener("change", updateDepthStyle);
+    colorInput.addEventListener("input", () => {
+      try {
+        localStorage.setItem(colorStorageKey, colorInput.value);
+      } catch (error) {
+        // The picker still works when browser storage is disabled.
+      }
+      updateDepthStyle();
+    });
     minInput.addEventListener("input", updateDepthStyle);
     maxInput.addEventListener("input", updateDepthStyle);
     opacityInput.addEventListener("input", () => {
@@ -145,7 +168,7 @@
           layout: { visibility: "none" },
           paint: {
             "color-relief-color": colorForDepths(1000, 2000),
-            "color-relief-opacity": 0.72
+            "color-relief-opacity": Number(opacityInput.value) / 100
           }
         }, map.getLayer("contour-lines") ? "contour-lines" : undefined);
       }
