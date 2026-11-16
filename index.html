@@ -620,7 +620,9 @@
         Checking GEBCO depth tiles…
       </p>
       <div class="info" style="font-size:11px;">
-        Coverage: approx. 113.84–179.9°E, 45–64.44°S.<br>
+        Global coverage activates when the global elevation archive is deployed;
+        higher-detail regional coverage: approx. 113.84–179.9°E,
+        45–64.44°S.<br>
         GEBCO 2026 · Not for navigation.
       </div>
     </div>
@@ -685,8 +687,9 @@
       <span style="font-size:11px;">Research boundaries are a plotting aid, not legal fishing limits.</span>
     </div>
         <div class="basemap-note" style="margin-top:10px;">
-          Basemaps: GEBCO 2026 global WMS. Numerical depth highlighting
-          and contours cover a smaller Southern Ocean region only.
+          Basemaps: GEBCO 2026 global WMS. Numerical highlighting uses
+          regional Terrain-RGB tiles, with optional global elevation tiles
+          when deployed. Contours remain regional.
           Not for navigation or safety at sea.
         </div>
       </div>
@@ -1038,7 +1041,7 @@
     });
   </script>
   <script src="./tools.js?v=all20-20261111"></script>
-  <script src="./depth.js?v=colour-picker-20261117"></script>
+  <script src="./depth.js?v=hybrid-depth-20261117"></script>
   <script src="./basemap.js?v=chart-default-20261110"></script>
 </body>
 </html>
